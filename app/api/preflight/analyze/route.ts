@@ -86,6 +86,16 @@ export async function POST(request: NextRequest) {
 
     console.log("[API] Paper content length:", paperContent.length, "characters");
     console.log("[API] First 500 characters:", paperContent.substring(0, 500));
+    
+    // Check for OpenAI API key before proceeding
+    if (!process.env.OPENAI_API_KEY) {
+      console.error("[API] OPENAI_API_KEY environment variable is missing");
+      throw new Error(
+        "OpenAI API key is not configured. Please set the OPENAI_API_KEY environment variable in your Vercel project settings (Settings > Environment Variables). Make sure it's set for Production, Preview, and Development environments, then redeploy."
+      );
+    }
+
+    console.log("[API] OpenAI API key found, length:", process.env.OPENAI_API_KEY.length);
     console.log("[API] Getting agent...");
 
     const agent = mastra.getAgent("paperAnalysisAgent");

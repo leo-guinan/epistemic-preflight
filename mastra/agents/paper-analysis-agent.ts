@@ -14,21 +14,19 @@ const coreClaimsSchema = z.object({
   riskSignal: z.string().optional(),
 });
 
-// Get API key from environment, with explicit error if missing
-const getOpenAIApiKey = () => {
+// Lazy initialization of OpenAI client to ensure environment variables are available
+// This function will be called when the agent is first used, not at module load time
+const getOpenAIClient = () => {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     throw new Error(
-      "OpenAI API key is missing. Please set the OPENAI_API_KEY environment variable in your Vercel project settings (Settings > Environment Variables)."
+      "OpenAI API key is missing. Please set the OPENAI_API_KEY environment variable in your Vercel project settings (Settings > Environment Variables). Make sure it's set for Production, Preview, and Development environments, then redeploy."
     );
   }
-  return apiKey;
+  return createOpenAI({
+    apiKey: apiKey,
+  });
 };
-
-// Create OpenAI provider with explicit API key
-const openai = createOpenAI({
-  apiKey: getOpenAIApiKey(),
-});
 
 export const paperAnalysisAgent = new Agent({
   id: "paperAnalysisAgent",
@@ -48,6 +46,10 @@ export const paperAnalysisAgent = new Agent({
     Look for where the paper positions itself relative to existing frameworks.
     Identify claims that reviewers might challenge or misunderstand.
   `,
-  model: openai("gpt-4o"),
+  // Use a function to get the model lazily - this ensures env vars are read at runtime
+  model: () => {
+    const openai = getOpenAIClient();
+    return openai("gpt-4o");
+  },
 });
 
