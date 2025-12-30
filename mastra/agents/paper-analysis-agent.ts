@@ -1,5 +1,5 @@
 import { Agent } from "@mastra/core/agent";
-import { openai } from "@ai-sdk/openai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { z } from "zod";
 
 const coreClaimsSchema = z.object({
@@ -12,6 +12,22 @@ const coreClaimsSchema = z.object({
     })
   ),
   riskSignal: z.string().optional(),
+});
+
+// Get API key from environment, with explicit error if missing
+const getOpenAIApiKey = () => {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error(
+      "OpenAI API key is missing. Please set the OPENAI_API_KEY environment variable in your Vercel project settings (Settings > Environment Variables)."
+    );
+  }
+  return apiKey;
+};
+
+// Create OpenAI provider with explicit API key
+const openai = createOpenAI({
+  apiKey: getOpenAIApiKey(),
 });
 
 export const paperAnalysisAgent = new Agent({
@@ -32,6 +48,6 @@ export const paperAnalysisAgent = new Agent({
     Look for where the paper positions itself relative to existing frameworks.
     Identify claims that reviewers might challenge or misunderstand.
   `,
-  model: openai("gpt-5-mini"),
+  model: openai("gpt-4o"),
 });
 
