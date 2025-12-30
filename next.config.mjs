@@ -1,7 +1,5 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  serverExternalPackages: ["@mastra/*"],
-};
+const nextConfig = {};
 
 export default nextConfig;
 

@@ -26,15 +26,15 @@ export function PaperUpload({ onSubmit }: PaperUploadProps) {
 
     try {
       if (uploadMethod === "file" && file) {
-        // For MVP, we'll read the file as text
-        // In production, you'd want proper PDF parsing
-        const text = await file.text();
-        onSubmit(text, file);
+        console.log("[Upload] Processing file:", file.name, file.size, "bytes");
+        // Send file directly to API - it will handle PDF processing
+        onSubmit("", file);
       } else if (uploadMethod === "paste" && abstract) {
+        console.log("[Upload] Processing pasted text, length:", abstract.length);
         onSubmit(abstract);
       }
     } catch (error) {
-      console.error("Upload error:", error);
+      console.error("[Upload] Error:", error);
       alert("Error processing paper. Please try again.");
     } finally {
       setIsProcessing(false);

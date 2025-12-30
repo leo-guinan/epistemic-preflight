@@ -1,0 +1,247 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.loading h2 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+}
+
+.loading p {
+  font-size: 1.1rem;
+  color: #6a6a6a;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+}
+
+.anchorSection {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid #e5e5e5;
+}
+
+.anchorBox {
+  padding: 1.5rem;
+  background: #f9f9f9;
+  border-left: 4px solid #1a1a1a;
+  border-radius: 6px;
+}
+
+.anchorText {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4a4a4a;
+  margin: 0;
+}
+
+.claimsSection {
+  margin-bottom: 3rem;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+}
+
+.claimsTable {
+  border: 2px solid #e5e5e5;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr;
+  background: #1a1a1a;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr;
+  border-top: 1px solid #e5e5e5;
+}
+
+.tableRow:nth-child(even) {
+  background: #f9f9f9;
+}
+
+.tableCell {
+  padding: 1rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #4a4a4a;
+}
+
+.tableHeader .tableCell {
+  color: #ffffff;
+}
+
+.summaryBox {
+  padding: 1.5rem;
+  background: #f0f7ff;
+  border-radius: 8px;
+  border: 2px solid #4a90e2;
+}
+
+.summaryText {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.noData {
+  padding: 2rem;
+  text-align: center;
+  color: #6a6a6a;
+  font-style: italic;
+}
+
+.abstractSection {
+  margin-bottom: 3rem;
+}
+
+.abstractComparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.abstractColumn {
+  border: 2px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: #ffffff;
+}
+
+.abstractLabel {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e5e5e5;
+}
+
+.abstractText {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #4a4a4a;
+  white-space: pre-wrap;
+}
+
+.highlights {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e5e5;
+}
+
+.highlightSection {
+  margin-bottom: 1rem;
+}
+
+.highlightSection strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #1a1a1a;
+  font-size: 0.95rem;
+}
+
+.highlightSection ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style: disc;
+}
+
+.highlightSection li {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #6a6a6a;
+  margin-bottom: 0.25rem;
+}
+
+.actions {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e5e5e5;
+}
+
+.primaryButton {
+  width: 100%;
+  padding: 1.25rem 2rem;
+  background: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 1rem;
+}
+
+.primaryButton:hover {
+  background: #333333;
+}
+
+.secondaryButtons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.secondaryButton {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: #1a1a1a;
+  border: 2px solid #e5e5e5;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondaryButton:hover {
+  border-color: #1a1a1a;
+  background: #f9f9f9;
+}
+
+@media (max-width: 968px) {
+  .abstractComparison {
+    grid-template-columns: 1fr;
+  }
+
+  .claimsTable {
+    overflow-x: auto;
+  }
+
+  .tableHeader,
+  .tableRow {
+    min-width: 600px;
+  }
+
+  .secondaryButtons {
+    grid-template-columns: 1fr;
+  }
+}
+

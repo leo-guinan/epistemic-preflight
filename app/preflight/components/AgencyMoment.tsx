@@ -13,9 +13,10 @@ interface Claim {
 interface AgencyMomentProps {
   claims: Claim[];
   riskSignal?: string;
+  onChoiceSelect?: (choiceId: string) => void;
 }
 
-export function AgencyMoment({ claims, riskSignal }: AgencyMomentProps) {
+export function AgencyMoment({ claims, riskSignal, onChoiceSelect }: AgencyMomentProps) {
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
 
   const choices = [
@@ -46,6 +47,10 @@ export function AgencyMoment({ claims, riskSignal }: AgencyMomentProps) {
 
   const handleChoiceSelect = (choiceId: string) => {
     setSelectedChoice(choiceId);
+    // If synthesis is selected, immediately navigate
+    if (choiceId === "synthesis-framing" && onChoiceSelect) {
+      onChoiceSelect(choiceId);
+    }
   };
 
   return (
@@ -80,7 +85,7 @@ export function AgencyMoment({ claims, riskSignal }: AgencyMomentProps) {
         ))}
       </div>
 
-      {selectedChoice && (
+      {selectedChoice && selectedChoice !== "synthesis-framing" && (
         <div className={styles.nextSteps}>
           <p className={styles.nextStepsText}>
             Great choice. We can help you implement this reframing. Would you
@@ -93,6 +98,13 @@ export function AgencyMoment({ claims, riskSignal }: AgencyMomentProps) {
             <button className={styles.actionButton}>Download Full Report</button>
             <button className={styles.actionButton}>Start Over</button>
           </div>
+        </div>
+      )}
+      {selectedChoice === "synthesis-framing" && (
+        <div className={styles.nextSteps}>
+          <p className={styles.nextStepsText}>
+            Generating your synthesis preview...
+          </p>
         </div>
       )}
 

@@ -9,17 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@mastra/core": "latest",
     "@ai-sdk/openai": "latest",
-    "next": "^14.2.0",
-    "react": "^18.3.0",
-    "react-dom": "^18.3.0",
+    "@mastra/core": "beta",
+    "@mastra/loggers": "beta",
+    "@mastra/memory": "beta",
+    "mastra": "beta",
+    "next": "^16.0.0",
+    "pdf-parse": "^1.1.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
-    "@types/react": "^18.3.0",
-    "@types/react-dom": "^18.3.0",
+    "@types/pdf-parse": "^1.1.5",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "typescript": "^5.5.0"
   },
   "packageManager": "pnpm@8.15.9+sha512.499434c9d8fdd1a2794ebf4552b3b25c0a633abcee5bb15e7b5de90f32f47b513aca98cd5cfd001c31f0db454bc3804edccd578501e4ca293a6816166bbd9f81"

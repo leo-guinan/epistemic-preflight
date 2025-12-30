@@ -15,6 +15,7 @@ const coreClaimsSchema = z.object({
 });
 
 export const paperAnalysisAgent = new Agent({
+  id: "paperAnalysisAgent",
   name: "Paper Analysis Agent",
   instructions: `
     You are an expert academic paper analyst specializing in epistemic structure analysis.
@@ -31,6 +32,6 @@ export const paperAnalysisAgent = new Agent({
     Look for where the paper positions itself relative to existing frameworks.
     Identify claims that reviewers might challenge or misunderstand.
   `,
-  model: openai("gpt-4o"),
+  model: openai("gpt-5-mini"),
 });
 
