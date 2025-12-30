@@ -88,8 +88,19 @@ export async function POST(request: NextRequest) {
     console.log("[API] First 500 characters:", paperContent.substring(0, 500));
     
     // Check for OpenAI API key before proceeding
+    console.log("[API] Checking for OPENAI_API_KEY environment variable...");
+    console.log("[API] NODE_ENV:", process.env.NODE_ENV);
+    console.log("[API] VERCEL_ENV:", process.env.VERCEL_ENV);
+    console.log("[API] OPENAI_API_KEY exists:", !!process.env.OPENAI_API_KEY);
+    console.log("[API] OPENAI_API_KEY length:", process.env.OPENAI_API_KEY?.length || 0);
+    
     if (!process.env.OPENAI_API_KEY) {
       console.error("[API] OPENAI_API_KEY environment variable is missing");
+      console.error("[API] Available env vars with 'API' or 'OPENAI':", 
+        Object.keys(process.env).filter(key => 
+          key.includes("OPENAI") || key.includes("API")
+        )
+      );
       throw new Error(
         "OpenAI API key is not configured. Please set the OPENAI_API_KEY environment variable in your Vercel project settings (Settings > Environment Variables). Make sure it's set for Production, Preview, and Development environments, then redeploy."
       );
