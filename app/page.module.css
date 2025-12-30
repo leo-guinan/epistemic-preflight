@@ -1,0 +1,198 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.hero {
+  text-align: center;
+  padding: 4rem 0;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 4rem;
+}
+
+.heroTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  color: #4a4a4a;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.heroAudience {
+  font-size: 1rem;
+  color: #6a6a6a;
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+
+.ctaContainer {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ctaPrimary {
+  background: #1a1a1a;
+  color: #ffffff;
+  padding: 1rem 2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: background 0.2s;
+  display: inline-block;
+}
+
+.ctaPrimary:hover {
+  background: #333333;
+}
+
+.ctaSecondary {
+  background: transparent;
+  color: #1a1a1a;
+  padding: 1rem 2rem;
+  border: 2px solid #1a1a1a;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+  display: inline-block;
+}
+
+.ctaSecondary:hover {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.section {
+  margin-bottom: 4rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+}
+
+.sectionText {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4a4a4a;
+  margin-bottom: 1rem;
+}
+
+.problemList,
+.whoList {
+  list-style: none;
+  padding-left: 0;
+  margin: 1.5rem 0;
+}
+
+.problemList li,
+.whoList li {
+  padding: 0.75rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4a4a4a;
+}
+
+.problemList li::before,
+.whoList li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #1a1a1a;
+  font-weight: bold;
+}
+
+.notList {
+  list-style: none;
+  padding-left: 0;
+  margin: 1.5rem 0;
+}
+
+.notList li {
+  padding: 0.5rem 0;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4a4a4a;
+}
+
+.feature {
+  margin-bottom: 2.5rem;
+}
+
+.featureTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #1a1a1a;
+}
+
+.featureText {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4a4a4a;
+}
+
+.howItWorksList {
+  margin: 1.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.howItWorksList li {
+  padding: 0.75rem 0;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4a4a4a;
+}
+
+.finalCta {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+  margin-top: 4rem;
+}
+
+.finalCtaText {
+  font-size: 1.25rem;
+  line-height: 1.8;
+  color: #4a4a4a;
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 2rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.75rem;
+  }
+
+  .ctaContainer {
+    flex-direction: column;
+  }
+
+  .ctaPrimary,
+  .ctaSecondary {
+    width: 100%;
+    text-align: center;
+  }
+}
+

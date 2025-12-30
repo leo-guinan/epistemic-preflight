@@ -1,0 +1,109 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #1a1a1a;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #6a6a6a;
+  margin-bottom: 2rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 2px solid #e5e5e5;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.option:hover {
+  border-color: #1a1a1a;
+  background: #f9f9f9;
+}
+
+.option input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.option span {
+  font-size: 1.1rem;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+
+.option input[type="radio"]:checked + span {
+  font-weight: 600;
+}
+
+.venueSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.venueLabel {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #4a4a4a;
+}
+
+.venueInput {
+  padding: 0.75rem;
+  border: 2px solid #e5e5e5;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.venueInput:focus {
+  outline: none;
+  border-color: #1a1a1a;
+}
+
+.submitButton {
+  padding: 1rem 2rem;
+  background: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #333333;
+}
+
+.submitButton:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
