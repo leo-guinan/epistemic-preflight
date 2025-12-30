@@ -13,6 +13,7 @@ import { SynthesisCommitted } from "./components/SynthesisCommitted";
 import { DisagreementPositioning } from "./components/DisagreementPositioning";
 import { BoundaryReframing } from "./components/BoundaryReframing";
 import { ClaimNarrowing } from "./components/ClaimNarrowing";
+import { fathomEvents } from "@/lib/fathom-tracking";
 import styles from "./page.module.css";
 
 type PreflightState =
@@ -56,6 +57,7 @@ export default function PreflightPage() {
   const [data, setData] = useState<PreflightData>({});
 
   const handleIntentSubmit = (intent: PaperIntent, venue?: string) => {
+    fathomEvents.intentDeclared(intent);
     setData({ ...data, intent, targetVenue: venue });
     setState("upload");
   };
@@ -65,6 +67,9 @@ export default function PreflightPage() {
     console.log("[Preflight] Has file:", !!file);
     console.log("[Preflight] Has content:", !!content);
     console.log("[Preflight] File name:", file?.name);
+    
+    // Track paper upload
+    fathomEvents.paperUploaded(file ? 'file' : 'paste');
     
     setData({ ...data, paperContent: content, paperFile: file });
     
@@ -127,6 +132,9 @@ export default function PreflightPage() {
         coreClaims: analysis.claims,
         riskSignal: analysis.riskSignal,
       });
+
+      // Track analysis completion
+      fathomEvents.analysisCompleted(analysis.claims?.length || 0);
     } catch (error) {
       console.error("[Preflight] Analysis error:", error);
       alert(error instanceof Error ? error.message : "Failed to analyze paper. Please try again.");
@@ -145,11 +153,13 @@ export default function PreflightPage() {
   };
 
   const handleFullAnalysisComplete = () => {
+    fathomEvents.fullAnalysisCompleted();
     setState("agency");
   };
 
   const handleAgencyChoice = (choiceId: string) => {
     console.log("[Preflight] Agency choice selected:", choiceId);
+    fathomEvents.agencyChoiceSelected(choiceId);
     switch (choiceId) {
       case "synthesis-framing":
         setState("synthesis-preview");
@@ -169,10 +179,12 @@ export default function PreflightPage() {
   };
 
   const handleSynthesisApply = () => {
+    fathomEvents.synthesisApplied();
     setState("synthesis-commit-preview");
   };
 
   const handleCommitComplete = (commitId: string) => {
+    fathomEvents.synthesisCommitted();
     setData({ ...data, commitId });
     setState("synthesis-committed");
   };

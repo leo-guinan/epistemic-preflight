@@ -13,6 +13,7 @@
     "@mastra/core": "beta",
     "@mastra/loggers": "beta",
     "@mastra/memory": "beta",
+    "fathom-client": "^3.7.2",
     "mastra": "beta",
     "next": "^16.0.0",
     "pdf-parse": "^1.1.4",

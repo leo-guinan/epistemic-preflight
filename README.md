@@ -92,6 +92,24 @@ epistemic-preflight/
 ### Environment Variables
 
 - `OPENAI_API_KEY` - Required for LLM operations
+- `NEXT_PUBLIC_FATHOM_ID` - Optional. Fathom Analytics site ID (defaults to `XJKVDZER` if not set)
+
+### Analytics
+
+This project uses [Fathom Analytics](https://usefathom.com/) for privacy-focused website analytics. The following events are tracked:
+
+- **Intent Declared** - User selects paper intent
+- **Paper Uploaded** - User uploads a paper (file or paste)
+- **Analysis Completed** - Initial analysis completes with claims extracted
+- **Full Analysis Completed** - Full arena analysis completes
+- **Agency Choice Selected** - User selects a strategic path
+- **Synthesis Applied** - User applies synthesis framing
+- **Synthesis Committed** - User commits synthesis changes
+
+To set up custom goals in Fathom:
+1. Go to your Fathom dashboard → Goals
+2. Create goals with the IDs: `INTENT_DECLARED`, `PAPER_UPLOADED`, `ANALYSIS_COMPLETED`, `FULL_ANALYSIS_COMPLETED`, `AGENCY_CHOICE_SELECTED`, `SYNTHESIS_APPLIED`, `SYNTHESIS_COMMITTED`
+3. Events will automatically track to these goals
 
 ## License
 

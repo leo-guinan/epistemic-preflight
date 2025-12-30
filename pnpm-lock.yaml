@@ -17,6 +17,9 @@ dependencies:
   '@mastra/memory':
     specifier: beta
     version: 1.0.0-beta.10(@mastra/core@1.0.0-beta.19)(zod@3.25.76)
+  fathom-client:
+    specifier: ^3.7.2
+    version: 3.7.2
   mastra:
     specifier: beta
     version: 1.0.0-beta.12(@mastra/core@1.0.0-beta.19)(typescript@5.9.3)(zod@3.25.76)
@@ -2537,6 +2540,10 @@ packages:
     resolution: {integrity: sha512-GGToxJ/w1x32s/D2EKND7kTil4n8OVk/9mycTc4VDza13lOvpUZTGX3mFSCtV9ksdGBVzvsyAVLM6mHFThxXxw==}
     dependencies:
       reusify: 1.1.0
+    dev: false
+
+  /fathom-client@3.7.2:
+    resolution: {integrity: sha512-sWtaNivhg7uwp/q1bUuIiNj4LeQZMEZ5NXXFFpZ8le4uDedAfQG84gPOdYehtVXbl+1yX2s8lmXZ2+IQ9a/xxA==}
     dev: false
 
   /fdir@6.5.0(picomatch@4.0.3):
