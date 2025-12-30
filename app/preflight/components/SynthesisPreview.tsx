@@ -22,12 +22,14 @@ interface SynthesisPreviewProps {
   claims: Claim[];
   paperContent: string;
   paperFile?: File;
+  onApply?: () => void;
 }
 
 export function SynthesisPreview({
   claims,
   paperContent,
   paperFile,
+  onApply,
 }: SynthesisPreviewProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [claimShifts, setClaimShifts] = useState<ClaimShift[]>([]);
@@ -220,7 +222,10 @@ export function SynthesisPreview({
 
       {/* Action Buttons */}
       <div className={styles.actions}>
-        <button className={styles.primaryButton}>
+        <button 
+          className={styles.primaryButton}
+          onClick={() => onApply?.()}
+        >
           Apply this framing to my draft
         </button>
         <div className={styles.secondaryButtons}>

@@ -1,0 +1,379 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.loading h2,
+.error p {
+  margin-bottom: 1rem;
+}
+
+.header {
+  margin-bottom: 3rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #1a1a1a;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+.changeSummary {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 3rem;
+}
+
+.sectionTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+}
+
+.willDoList,
+.willNotList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.willDoList li {
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  color: #1a1a1a;
+}
+
+.willDoList li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #22c55e;
+  font-weight: bold;
+}
+
+.willNotList li {
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  color: #666;
+}
+
+.willNotList li::before {
+  content: "✗";
+  position: absolute;
+  left: 0;
+  color: #ef4444;
+}
+
+.claimDiffsSection,
+.sectionInsertsSection,
+.abstractDiffSection {
+  margin-bottom: 3rem;
+}
+
+.claimDiffCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.claimDiffHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #f9fafb;
+  cursor: pointer;
+  user-select: none;
+}
+
+.claimDiffHeader:hover {
+  background: #f3f4f6;
+}
+
+.claimDiffTitle {
+  font-size: 1rem;
+  color: #1a1a1a;
+}
+
+.expandIcon {
+  font-size: 1.5rem;
+  color: #666;
+  font-weight: 300;
+}
+
+.claimDiffContent {
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.diffComparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.diffBefore,
+.diffAfter {
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.diffBefore {
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+}
+
+.diffAfter {
+  background: #f0fdf4;
+  border-left: 3px solid #22c55e;
+}
+
+.diffLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.diffBefore .diffLabel {
+  color: #991b1b;
+}
+
+.diffAfter .diffLabel {
+  color: #166534;
+}
+
+.diffText {
+  color: #1a1a1a;
+  line-height: 1.6;
+}
+
+.diffRationale {
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.sectionInsertCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  background: #f9fafb;
+}
+
+.sectionInsertHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sectionInsertBadge {
+  background: #3b82f6;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.sectionInsertLocation {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.sectionInsertContent {
+  color: #1a1a1a;
+  line-height: 1.7;
+}
+
+.abstractDiffSection {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 2rem;
+  background: #f9fafb;
+}
+
+.abstractComparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.abstractColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.abstractLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #1a1a1a;
+}
+
+.abstractText {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  color: #1a1a1a;
+  line-height: 1.7;
+  flex: 1;
+}
+
+.abstractHighlights {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.highlightSection {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.highlightSection strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #1a1a1a;
+}
+
+.highlightSection ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #4b5563;
+}
+
+.highlightSection li {
+  margin-bottom: 0.25rem;
+}
+
+.commitMetadata {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 3rem;
+  background: #f9fafb;
+}
+
+.metadataField {
+  margin-bottom: 1.5rem;
+}
+
+.metadataField label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #1a1a1a;
+}
+
+.commitInput,
+.commitTextarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.commitInput:focus,
+.commitTextarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.attribution {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+.finalActions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.commitButton {
+  padding: 1rem 2rem;
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.commitButton:hover {
+  background: #333;
+}
+
+.commitButton:active {
+  background: #000;
+}
+
+.secondaryActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.secondaryButton {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  color: #1a1a1a;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondaryButton:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.secondaryButton:active {
+  background: #f3f4f6;
+}
+

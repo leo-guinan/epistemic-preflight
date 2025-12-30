@@ -8,6 +8,8 @@ import { ComparatorSelection } from "./components/ComparatorSelection";
 import { FullAnalysis } from "./components/FullAnalysis";
 import { AgencyMoment } from "./components/AgencyMoment";
 import { SynthesisPreview } from "./components/SynthesisPreview";
+import { SynthesisCommitPreview } from "./components/SynthesisCommitPreview";
+import { SynthesisCommitted } from "./components/SynthesisCommitted";
 import { DisagreementPositioning } from "./components/DisagreementPositioning";
 import { BoundaryReframing } from "./components/BoundaryReframing";
 import { ClaimNarrowing } from "./components/ClaimNarrowing";
@@ -21,6 +23,8 @@ type PreflightState =
   | "full-analysis"
   | "agency"
   | "synthesis-preview"
+  | "synthesis-commit-preview"
+  | "synthesis-committed"
   | "disagreement-preview"
   | "boundary-preview"
   | "narrowing-preview";
@@ -44,6 +48,7 @@ interface PreflightData {
   }>;
   riskSignal?: string;
   comparators?: Array<File | string>;
+  commitId?: string;
 }
 
 export default function PreflightPage() {
@@ -163,6 +168,19 @@ export default function PreflightPage() {
     }
   };
 
+  const handleSynthesisApply = () => {
+    setState("synthesis-commit-preview");
+  };
+
+  const handleCommitComplete = (commitId: string) => {
+    setData({ ...data, commitId });
+    setState("synthesis-committed");
+  };
+
+  const handleCommitCancel = () => {
+    setState("synthesis-preview");
+  };
+
   return (
     <div className={styles.container}>
       {state === "intent" && (
@@ -200,6 +218,37 @@ export default function PreflightPage() {
           claims={data.coreClaims || []}
           paperContent={data.paperContent || ""}
           paperFile={data.paperFile}
+          onApply={handleSynthesisApply}
+        />
+      )}
+      {state === "synthesis-commit-preview" && (
+        <SynthesisCommitPreview
+          claims={data.coreClaims || []}
+          paperContent={data.paperContent || ""}
+          paperFile={data.paperFile}
+          onCommit={handleCommitComplete}
+          onCancel={handleCommitCancel}
+        />
+      )}
+      {state === "synthesis-committed" && (
+        <SynthesisCommitted
+          commitId={data.commitId || ""}
+          onPreviewDraft={() => {
+            // TODO: Implement preview draft
+            console.log("Preview draft");
+          }}
+          onTestReviewers={() => {
+            // TODO: Implement test reviewers
+            console.log("Test reviewers");
+          }}
+          onExportSubmission={() => {
+            // TODO: Implement export submission
+            console.log("Export submission");
+          }}
+          onCreateReviewerResponse={() => {
+            // TODO: Implement reviewer response
+            console.log("Create reviewer response");
+          }}
         />
       )}
       {state === "disagreement-preview" && (
