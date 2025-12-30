@@ -96,20 +96,17 @@ epistemic-preflight/
 
 ### Analytics
 
-This project uses [Fathom Analytics](https://usefathom.com/) for privacy-focused website analytics. The following events are tracked:
+This project uses [Fathom Analytics](https://usefathom.com/) for privacy-focused website analytics. The following events are automatically tracked:
 
-- **Intent Declared** - User selects paper intent
-- **Paper Uploaded** - User uploads a paper (file or paste)
-- **Analysis Completed** - Initial analysis completes with claims extracted
-- **Full Analysis Completed** - Full arena analysis completes
-- **Agency Choice Selected** - User selects a strategic path
-- **Synthesis Applied** - User applies synthesis framing
-- **Synthesis Committed** - User commits synthesis changes
+- **intent declared** - User selects paper intent
+- **paper uploaded** - User uploads a paper (file or paste)
+- **analysis completed** - Initial analysis completes with claims extracted (value = number of claims)
+- **full analysis completed** - Full arena analysis completes
+- **agency choice selected** - User selects a strategic path
+- **synthesis applied** - User applies synthesis framing
+- **synthesis committed** - User commits synthesis changes
 
-To set up custom goals in Fathom:
-1. Go to your Fathom dashboard → Goals
-2. Create goals with the IDs: `INTENT_DECLARED`, `PAPER_UPLOADED`, `ANALYSIS_COMPLETED`, `FULL_ANALYSIS_COMPLETED`, `AGENCY_CHOICE_SELECTED`, `SYNTHESIS_APPLIED`, `SYNTHESIS_COMMITTED`
-3. Events will automatically track to these goals
+**Note:** Events are automatically created in your Fathom dashboard when first tracked. No manual setup is required. You can view and manage events in your Fathom dashboard under the Events section.
 
 ## License
 

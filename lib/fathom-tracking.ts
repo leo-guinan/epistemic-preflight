@@ -5,13 +5,19 @@ import { trackEvent } from 'fathom-client';
 /**
  * Track custom events in Fathom Analytics
  * 
- * Event names should match goals set up in your Fathom dashboard.
- * You'll need to create these goals in Fathom and use the goal IDs here.
+ * Events are automatically created in your Fathom dashboard when first tracked.
+ * Event names should be readable and recognizable (e.g., "paper uploaded" not "PAPER_UPLOADED").
+ * 
+ * @param eventName - Human-readable event name (e.g., "paper uploaded")
+ * @param value - Optional value in cents (default: 0)
  */
-
-export const trackFathomEvent = (goalId: string, value: number = 0) => {
+export const trackFathomEvent = (eventName: string, value: number = 0) => {
   try {
-    trackEvent(goalId, value);
+    if (value > 0) {
+      trackEvent(eventName, { _value: value });
+    } else {
+      trackEvent(eventName);
+    }
   } catch (error) {
     // Silently fail if Fathom isn't loaded yet
     console.debug('[Fathom] Event tracking failed:', error);
@@ -22,37 +28,38 @@ export const trackFathomEvent = (goalId: string, value: number = 0) => {
 export const fathomEvents = {
   // Intent declaration
   intentDeclared: (intent: string) => {
-    trackFathomEvent('INTENT_DECLARED', 0);
+    trackFathomEvent('intent declared');
   },
 
   // Paper upload
   paperUploaded: (method: 'file' | 'paste') => {
-    trackFathomEvent('PAPER_UPLOADED', 0);
+    trackFathomEvent('paper uploaded');
   },
 
   // Analysis completed
   analysisCompleted: (claimsCount: number) => {
-    trackFathomEvent('ANALYSIS_COMPLETED', claimsCount);
+    // Value is the number of claims extracted
+    trackFathomEvent('analysis completed', claimsCount);
   },
 
   // Full analysis completed
   fullAnalysisCompleted: () => {
-    trackFathomEvent('FULL_ANALYSIS_COMPLETED', 0);
+    trackFathomEvent('full analysis completed');
   },
 
   // Agency choice selected
   agencyChoiceSelected: (choiceId: string) => {
-    trackFathomEvent('AGENCY_CHOICE_SELECTED', 0);
+    trackFathomEvent('agency choice selected');
   },
 
   // Synthesis applied
   synthesisApplied: () => {
-    trackFathomEvent('SYNTHESIS_APPLIED', 0);
+    trackFathomEvent('synthesis applied');
   },
 
   // Synthesis committed
   synthesisCommitted: () => {
-    trackFathomEvent('SYNTHESIS_COMMITTED', 0);
+    trackFathomEvent('synthesis committed');
   },
 };
 
