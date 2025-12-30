@@ -8,6 +8,9 @@ import { ComparatorSelection } from "./components/ComparatorSelection";
 import { FullAnalysis } from "./components/FullAnalysis";
 import { AgencyMoment } from "./components/AgencyMoment";
 import { SynthesisPreview } from "./components/SynthesisPreview";
+import { DisagreementPositioning } from "./components/DisagreementPositioning";
+import { BoundaryReframing } from "./components/BoundaryReframing";
+import { ClaimNarrowing } from "./components/ClaimNarrowing";
 import styles from "./page.module.css";
 
 type PreflightState =
@@ -17,7 +20,10 @@ type PreflightState =
   | "comparators"
   | "full-analysis"
   | "agency"
-  | "synthesis-preview";
+  | "synthesis-preview"
+  | "disagreement-preview"
+  | "boundary-preview"
+  | "narrowing-preview";
 
 type PaperIntent =
   | "introduce-theory"
@@ -138,10 +144,23 @@ export default function PreflightPage() {
   };
 
   const handleAgencyChoice = (choiceId: string) => {
-    if (choiceId === "synthesis-framing") {
-      setState("synthesis-preview");
+    console.log("[Preflight] Agency choice selected:", choiceId);
+    switch (choiceId) {
+      case "synthesis-framing":
+        setState("synthesis-preview");
+        break;
+      case "own-disagreement":
+        setState("disagreement-preview");
+        break;
+      case "reframe-boundary":
+        setState("boundary-preview");
+        break;
+      case "narrow-claim":
+        setState("narrowing-preview");
+        break;
+      default:
+        console.warn("[Preflight] Unknown choice:", choiceId);
     }
-    // Other choices can be handled here later
   };
 
   return (
@@ -178,6 +197,29 @@ export default function PreflightPage() {
       )}
       {state === "synthesis-preview" && (
         <SynthesisPreview
+          claims={data.coreClaims || []}
+          paperContent={data.paperContent || ""}
+          paperFile={data.paperFile}
+        />
+      )}
+      {state === "disagreement-preview" && (
+        <DisagreementPositioning
+          claims={data.coreClaims || []}
+          paperContent={data.paperContent || ""}
+          paperFile={data.paperFile}
+          comparators={data.comparators}
+        />
+      )}
+      {state === "boundary-preview" && (
+        <BoundaryReframing
+          claims={data.coreClaims || []}
+          paperContent={data.paperContent || ""}
+          paperFile={data.paperFile}
+          comparators={data.comparators}
+        />
+      )}
+      {state === "narrowing-preview" && (
+        <ClaimNarrowing
           claims={data.coreClaims || []}
           paperContent={data.paperContent || ""}
           paperFile={data.paperFile}

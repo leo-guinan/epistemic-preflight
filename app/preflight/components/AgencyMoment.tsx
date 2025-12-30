@@ -47,8 +47,8 @@ export function AgencyMoment({ claims, riskSignal, onChoiceSelect }: AgencyMomen
 
   const handleChoiceSelect = (choiceId: string) => {
     setSelectedChoice(choiceId);
-    // If synthesis is selected, immediately navigate
-    if (choiceId === "synthesis-framing" && onChoiceSelect) {
+    // Navigate immediately when any choice is selected
+    if (onChoiceSelect) {
       onChoiceSelect(choiceId);
     }
   };
@@ -85,25 +85,10 @@ export function AgencyMoment({ claims, riskSignal, onChoiceSelect }: AgencyMomen
         ))}
       </div>
 
-      {selectedChoice && selectedChoice !== "synthesis-framing" && (
+      {selectedChoice && (
         <div className={styles.nextSteps}>
           <p className={styles.nextStepsText}>
-            Great choice. We can help you implement this reframing. Would you
-            like to:
-          </p>
-          <div className={styles.actionButtons}>
-            <button className={styles.actionButton}>
-              Get Detailed Guidance
-            </button>
-            <button className={styles.actionButton}>Download Full Report</button>
-            <button className={styles.actionButton}>Start Over</button>
-          </div>
-        </div>
-      )}
-      {selectedChoice === "synthesis-framing" && (
-        <div className={styles.nextSteps}>
-          <p className={styles.nextStepsText}>
-            Generating your synthesis preview...
+            Generating your preview...
           </p>
         </div>
       )}

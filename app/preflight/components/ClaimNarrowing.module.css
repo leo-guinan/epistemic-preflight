@@ -1,0 +1,266 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.loading h2 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+}
+
+.loading p {
+  font-size: 1.1rem;
+  color: #6a6a6a;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+}
+
+.headerSection {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid #e5e5e5;
+}
+
+.subtextBox {
+  padding: 1.5rem;
+  background: #f9f9f9;
+  border-left: 4px solid #1a1a1a;
+  border-radius: 6px;
+}
+
+.subtext {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4a4a4a;
+  margin: 0;
+}
+
+.claimsSection {
+  margin-bottom: 3rem;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+}
+
+.claimsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.claimOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 2px solid #e5e5e5;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #ffffff;
+}
+
+.claimOption:hover {
+  border-color: #1a1a1a;
+  background: #f9f9f9;
+}
+
+.claimOption:has(input:checked) {
+  border-color: #1a1a1a;
+  background: #f0f0f0;
+}
+
+.radio {
+  width: 20px;
+  height: 20px;
+  margin-top: 0.25rem;
+  cursor: pointer;
+}
+
+.claimContent {
+  flex: 1;
+}
+
+.claimHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.claimLabel {
+  font-size: 1.25rem;
+  color: #1a1a1a;
+}
+
+.riskBadge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.riskBadge.high {
+  background: #fff5f5;
+  color: #c92a2a;
+  border: 1px solid #ff6b6b;
+}
+
+.riskBadge.medium {
+  background: #fffbf0;
+  color: #d97706;
+  border: 1px solid #fbbf24;
+}
+
+.claimText {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #4a4a4a;
+  margin-bottom: 0.5rem;
+}
+
+.claimReason {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #6a6a6a;
+  font-style: italic;
+}
+
+.rewriteSection {
+  margin-bottom: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e5e5e5;
+}
+
+.rewriteComparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.rewriteColumn {
+  border: 2px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: #ffffff;
+}
+
+.rewriteLabel {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e5e5e5;
+}
+
+.rewriteText {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4a4a4a;
+  white-space: pre-wrap;
+}
+
+.impactBox {
+  padding: 1.5rem;
+  background: #f0f7ff;
+  border-radius: 8px;
+  border: 2px solid #4a90e2;
+}
+
+.impactText {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #1a1a1a;
+  margin-bottom: 0.75rem;
+}
+
+.impactText strong {
+  color: #1a1a1a;
+}
+
+.impactDetails {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #4a4a4a;
+  margin: 0;
+}
+
+.actions {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e5e5e5;
+}
+
+.primaryButton {
+  width: 100%;
+  padding: 1.25rem 2rem;
+  background: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 1rem;
+}
+
+.primaryButton:hover {
+  background: #333333;
+}
+
+.secondaryButtons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.secondaryButton {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: #1a1a1a;
+  border: 2px solid #e5e5e5;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondaryButton:hover {
+  border-color: #1a1a1a;
+  background: #f9f9f9;
+}
+
+@media (max-width: 768px) {
+  .rewriteComparison {
+    grid-template-columns: 1fr;
+  }
+
+  .secondaryButtons {
+    grid-template-columns: 1fr;
+  }
+}
+
