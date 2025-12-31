@@ -184,14 +184,14 @@ When deploying to Vercel:
 - Prisma 5 works fine with Supavisor for migrations
 
 ### Example:
-If your password is `PAWLnANKaREMspjE!i7`, the connection string should be:
+If your password is `MyPassword123!`, the connection string should be:
 ```env
-DATABASE_URL=postgresql://postgres:PAWLnANKaREMspjE%21i7@db.aqimmufaauqhbisrgssq.supabase.co:5432/postgres?pgbouncer=true
+DATABASE_URL=postgresql://postgres:MyPassword123%21@db.[PROJECT_REF].supabase.co:5432/postgres?pgbouncer=true
 ```
 
 **Or if using the pooler URL format:**
 ```env
-DATABASE_URL=postgresql://postgres.aqimmufaauqhbisrgssq:PAWLnANKaREMspjE%21i7@aws-0-us-west-2.pooler.supabase.com:5432/postgres?pgbouncer=true
+DATABASE_URL=postgresql://postgres.[PROJECT_REF]:MyPassword123%21@aws-0-us-west-2.pooler.supabase.com:5432/postgres?pgbouncer=true
 ```
 
 **Important:** 

@@ -38,13 +38,15 @@ You're getting "Can't reach database server" errors when trying to run migration
 
 **Before (IPv6 only - won't work on IPv4):**
 ```env
-DATABASE_URL=postgresql://postgres:PAWLnANKaREMspjE!i7@db.aqimmufaauqhbisrgssq.supabase.co:5432/postgres
+DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres
 ```
 
 **After (IPv4 compatible - Supavisor Session Mode):**
 ```env
-DATABASE_URL=postgresql://postgres:PAWLnANKaREMspjE%21i7@db.aqimmufaauqhbisrgssq.supabase.co:5432/postgres?pgbouncer=true
+DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres?pgbouncer=true
 ```
+
+**Note:** If your password contains special characters like `!`, URL-encode them (e.g., `!` becomes `%21`).
 
 **Note:** Both use port 5432, but Supavisor adds `?pgbouncer=true` and works with IPv4.
 
