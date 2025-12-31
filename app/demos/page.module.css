@@ -55,26 +55,6 @@
   transform: translateY(-4px);
 }
 
-.demoCard.featured {
-  border-color: #3b82f6;
-  border-width: 3px;
-  background: linear-gradient(to bottom, #eff6ff 0%, white 10%);
-}
-
-.featuredBadge {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: #3b82f6;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 .demoHeader {
   margin-bottom: 1.5rem;
 }

@@ -12,7 +12,6 @@ export default function DemosPage() {
       authors: "Bender et al. (2021)",
       description: "The hero demo. Watch how adversarial claims become boundary questions. This is epistemic conflict resolution.",
       demoType: "conflict",
-      featured: true,
     },
     {
       id: "attention",
@@ -21,7 +20,6 @@ export default function DemosPage() {
       authors: "Vaswani et al. (2017)",
       description: "Reverse-engineer a field's origin myth. See the foundational claims that birthed an entire research paradigm.",
       demoType: "foundational",
-      featured: false,
     },
     {
       id: "alignment",
@@ -30,7 +28,6 @@ export default function DemosPage() {
       authors: "Anthropic (2022)",
       description: "Where responsibility gets blurry. See how claims shift from 'models are dangerous' to 'governance is solved'.",
       demoType: "governance",
-      featured: false,
     },
   ];
 
@@ -50,11 +47,8 @@ export default function DemosPage() {
           <Link
             key={demo.id}
             href={`/demos/${demo.id}`}
-            className={`${styles.demoCard} ${demo.featured ? styles.featured : ""}`}
+            className={styles.demoCard}
           >
-            {demo.featured && (
-              <div className={styles.featuredBadge}>Hero Demo</div>
-            )}
             <div className={styles.demoHeader}>
               <h2 className={styles.demoTitle}>{demo.title}</h2>
               <p className={styles.demoSubtitle}>{demo.subtitle}</p>
