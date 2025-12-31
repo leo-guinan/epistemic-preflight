@@ -52,6 +52,7 @@ export async function POST(request: NextRequest) {
         userId: dbUser.id,
         fileName: file.name,
         storageKey: storagePath,
+        bucket: bucketName,
         status: "uploaded",
       },
     });
