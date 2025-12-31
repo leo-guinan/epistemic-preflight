@@ -105,7 +105,7 @@ export function PaperUpload({ onSubmit }: PaperUploadProps) {
   };
 
   const pollForProcessing = async (jobId: string): Promise<{ extractedText: string }> => {
-    const maxAttempts = 60; // 5 minutes max
+    const maxAttempts = 90; // 7.5 minutes max (90 * 5s = 450s)
     const pollInterval = 5000; // 5 seconds
     const sessionId = sessionStorage.getItem("preflight_session_id");
     
@@ -126,19 +126,34 @@ export function PaperUpload({ onSubmit }: PaperUploadProps) {
       
       const data = await response.json();
       
+      const attempt = i + 1;
+      console.log(`[Upload] Poll ${attempt}/${maxAttempts}: Status = ${data.status}`, data.error ? `Error: ${data.error}` : '');
+      
       if (data.status === "completed") {
+        console.log("[Upload] Processing completed successfully");
         return { extractedText: data.extractedText };
       }
       
       if (data.status === "failed") {
+        console.error("[Upload] Processing failed:", data.error);
         throw new Error(data.error || "PDF processing failed");
+      }
+      
+      // Show progress for long-running processing
+      const attempt = i + 1;
+      if (data.status === "processing") {
+        console.log(`[Upload] Still processing... (attempt ${attempt}/${maxAttempts}, ~${Math.round(attempt * pollInterval / 1000)}s elapsed)`);
+        setProcessingProgress(`Processing PDF... (${Math.round(attempt * pollInterval / 1000)}s)`);
+      } else if (data.status === "uploaded") {
+        console.log(`[Upload] Upload complete, waiting for processing to start... (attempt ${attempt}/${maxAttempts})`);
+        setProcessingProgress("Starting processing...");
       }
       
       // Wait before next poll
       await new Promise(resolve => setTimeout(resolve, pollInterval));
     }
     
-    throw new Error("Processing timeout - please try again");
+    throw new Error(`Processing timeout after ${Math.round(maxAttempts * pollInterval / 1000)}s - please try again or check the server logs`);
   };
 
   return (

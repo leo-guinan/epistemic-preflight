@@ -96,10 +96,15 @@ export async function POST(request: NextRequest) {
       data: { status: "uploaded" },
     });
 
+    console.log(`[Upload Complete] Job ${jobId} marked as uploaded, starting processing...`);
+    console.log(`[Upload Complete] Storage path: ${updatedJob.storageKey}, Bucket: ${updatedJob.bucket}`);
+
     // Trigger processing asynchronously
     setImmediate(() => {
+      console.log(`[Upload Complete] Starting async processing for job ${jobId}...`);
       processPDFFromStorage(jobId, updatedJob.storageKey, updatedJob.bucket).catch((error) => {
         console.error("[Upload Complete] Processing error:", error);
+        console.error("[Upload Complete] Error stack:", error instanceof Error ? error.stack : "No stack trace");
       });
     });
 
@@ -159,20 +164,29 @@ async function processPDFFromStorage(
   storagePath: string,
   bucketName: string
 ) {
+  const startTime = Date.now();
+  console.log(`[Process PDF] Starting processing for job ${jobId}`);
+  console.log(`[Process PDF] Storage path: ${storagePath}, Bucket: ${bucketName}`);
+  
   try {
     // Update status to processing
     await prisma.processingJob.update({
       where: { id: jobId },
       data: { status: "processing" },
     });
+    console.log(`[Process PDF] Job ${jobId} status updated to 'processing'`);
 
     // Download from Supabase Storage
+    console.log(`[Process PDF] Downloading file from bucket '${bucketName}' at path '${storagePath}'...`);
     const { downloadFromSupabaseStorage } = await import("@/lib/supabase-storage");
     const pdfBuffer = await downloadFromSupabaseStorage(bucketName, storagePath);
+    console.log(`[Process PDF] File downloaded, size: ${pdfBuffer.length} bytes`);
 
     // Process PDF
+    console.log(`[Process PDF] Starting PDF text extraction...`);
     const { processPDF } = await import("@/lib/pdf-processor");
     const processed = await processPDF(pdfBuffer);
+    console.log(`[Process PDF] PDF processed successfully, extracted ${processed.text.length} characters`);
 
     // Update job with result
     await prisma.processingJob.update({
@@ -182,14 +196,23 @@ async function processPDFFromStorage(
         extractedText: processed.text,
       },
     });
+    
+    const duration = Date.now() - startTime;
+    console.log(`[Process PDF] Job ${jobId} completed successfully in ${duration}ms`);
   } catch (error: any) {
+    const duration = Date.now() - startTime;
+    console.error(`[Process PDF] Job ${jobId} failed after ${duration}ms:`, error);
+    console.error(`[Process PDF] Error message:`, error?.message);
+    console.error(`[Process PDF] Error stack:`, error?.stack);
+    
     await prisma.processingJob.update({
       where: { id: jobId },
       data: {
         status: "failed",
-        error: error.message || "Processing failed",
+        error: error?.message || "Processing failed",
       },
     });
+    console.log(`[Process PDF] Job ${jobId} status updated to 'failed'`);
   }
 }
 
