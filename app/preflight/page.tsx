@@ -15,6 +15,7 @@ import { SynthesisCommitted } from "./components/SynthesisCommitted";
 import { DisagreementPositioning } from "./components/DisagreementPositioning";
 import { BoundaryReframing } from "./components/BoundaryReframing";
 import { ClaimNarrowing } from "./components/ClaimNarrowing";
+import { Navigation } from "@/app/components/Navigation";
 import { fathomEvents } from "@/lib/fathom-tracking";
 import styles from "./page.module.css";
 
@@ -447,7 +448,9 @@ export default function PreflightPage() {
   };
 
   return (
-    <div className={styles.container}>
+    <>
+      <Navigation />
+      <div className={styles.container}>
       {state === "intent" && (
         <IntentDeclaration onSubmit={handleIntentSubmit} />
       )}
@@ -549,6 +552,7 @@ export default function PreflightPage() {
         />
       )}
     </div>
+    </>
   );
 }
 
