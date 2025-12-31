@@ -21,6 +21,7 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   papers        Paper[]
+  processingJobs ProcessingJob[]
 }
 
 model Paper {
@@ -41,5 +42,21 @@ model Paper {
   updatedAt        DateTime @updatedAt
 
   @@index([userId])
+}
+
+model ProcessingJob {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fileName      String
+  storageKey    String   // Supabase Storage path
+  status        String   // "uploaded" | "processing" | "completed" | "failed"
+  extractedText String?  @db.Text
+  error         String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
 }
 

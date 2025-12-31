@@ -27,6 +27,7 @@ const createPaperSchema = z.object({
       risks: z.array(z.string()),
       reframing: z.array(z.string()),
     })
+    .nullable()
     .optional(),
 });
 

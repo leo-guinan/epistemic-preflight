@@ -36,6 +36,9 @@ OPENAI_API_KEY=your-api-key-here
 DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres
 NEXT_PUBLIC_SUPABASE_URL=https://[PROJECT_REF].supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+
+# Supabase Storage (optional - defaults to "papers" bucket)
+SUPABASE_STORAGE_BUCKET=papers
 ```
 
 3. Set up Supabase:

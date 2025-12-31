@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { processPDFClient } from "@/lib/pdf-client";
 import styles from "./PaperUpload.module.css";
 
 interface PaperUploadProps {
@@ -29,45 +28,32 @@ export function PaperUpload({ onSubmit }: PaperUploadProps) {
 
     try {
       if (uploadMethod === "file" && file) {
-        console.log("[Upload] Processing file:", file.name, file.size, "bytes");
+        console.log("[Upload] Uploading file:", file.name, file.size, "bytes");
+        setProcessingProgress("Uploading file...");
         
-        // Check file size and warn if very large
-        const fileSizeMB = file.size / (1024 * 1024);
-        if (fileSizeMB > 10) {
-          const proceed = confirm(
-            `This file is ${fileSizeMB.toFixed(1)}MB. Processing may take a while. Continue?`
-          );
-          if (!proceed) {
-            setIsProcessing(false);
-            return;
-          }
+        // Upload to Supabase Storage and get processing job ID
+        const formData = new FormData();
+        formData.append("file", file);
+        
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+        
+        if (!uploadResponse.ok) {
+          const error = await uploadResponse.json();
+          throw new Error(error.error || "Failed to upload file");
         }
-
-        // Process PDF client-side if it's a PDF
-        if (file.type === "application/pdf" || file.name.endsWith(".pdf")) {
-          setProcessingProgress("Extracting text from PDF...");
-          console.log("[Upload] Processing PDF client-side...");
-          
-          try {
-            const processed = await processPDFClient(file);
-            console.log("[Upload] PDF processed:", processed.pageCount, "pages");
-            console.log("[Upload] Extracted text length:", processed.text.length);
-            setProcessingProgress(`Extracted ${processed.pageCount} pages. Sending for analysis...`);
-            
-            // Send only the extracted text, not the file
-            onSubmit(processed.text, file); // Pass file for metadata (name, etc.)
-          } catch (error) {
-            console.error("[Upload] PDF processing error:", error);
-            throw new Error(
-              "Failed to process PDF. Please ensure it's a valid PDF file and try again."
-            );
-          }
-        } else {
-          // For non-PDF files, read as text
-          setProcessingProgress("Reading file...");
-          const text = await file.text();
-          onSubmit(text, file);
-        }
+        
+        const { jobId } = await uploadResponse.json();
+        console.log("[Upload] File uploaded, jobId:", jobId);
+        
+        // Poll for processing completion
+        setProcessingProgress("Processing PDF...");
+        const result = await pollForProcessing(jobId);
+        
+        // Continue with extracted text
+        onSubmit(result.extractedText, file);
       } else if (uploadMethod === "paste" && abstract) {
         console.log("[Upload] Processing pasted text, length:", abstract.length);
         onSubmit(abstract);
@@ -79,6 +65,29 @@ export function PaperUpload({ onSubmit }: PaperUploadProps) {
       setIsProcessing(false);
       setProcessingProgress("");
     }
+  };
+
+  const pollForProcessing = async (jobId: string): Promise<{ extractedText: string }> => {
+    const maxAttempts = 60; // 5 minutes max
+    const pollInterval = 5000; // 5 seconds
+    
+    for (let i = 0; i < maxAttempts; i++) {
+      const response = await fetch(`/api/upload/status/${jobId}`);
+      const data = await response.json();
+      
+      if (data.status === "completed") {
+        return { extractedText: data.extractedText };
+      }
+      
+      if (data.status === "failed") {
+        throw new Error(data.error || "PDF processing failed");
+      }
+      
+      // Wait before next poll
+      await new Promise(resolve => setTimeout(resolve, pollInterval));
+    }
+    
+    throw new Error("Processing timeout - please try again");
   };
 
   return (
