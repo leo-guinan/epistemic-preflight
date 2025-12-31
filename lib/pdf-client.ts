@@ -17,8 +17,11 @@ export async function processPDFClient(file: File): Promise<ProcessedPDF> {
   // Dynamically import pdfjs-dist only when needed (client-side)
   const pdfjsLib = await import('pdfjs-dist');
   
-  // Set worker source for PDF.js
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+  // Set worker source - use local copy from public directory for reliability
+  // This avoids CDN issues and works offline
+  if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdfjs/pdf.worker.min.mjs';
+  }
 
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
