@@ -106,6 +106,12 @@ You need **two buckets**: one for permanent storage and one for temporary anonym
 
 Add these to your `.env` file:
 
+**For Development/Testing:**
+```env
+# Disable rate limiting for testing (optional)
+DISABLE_RATE_LIMIT=true
+```
+
 ```env
 # Database connection (replace [PASSWORD] and [PROJECT_REF] with your actual values)
 DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres
@@ -183,7 +189,14 @@ If your password is `PAWLnANKaREMspjE!i7`, the connection string should be:
 DATABASE_URL=postgresql://postgres:PAWLnANKaREMspjE%21i7@db.aqimmufaauqhbisrgssq.supabase.co:5432/postgres?pgbouncer=true
 ```
 
-**Important:** Make sure you select **"Supavisor"** (Session Mode), not "Direct connection" or "Session Pooler" (which is deprecated).
+**Or if using the pooler URL format:**
+```env
+DATABASE_URL=postgresql://postgres.aqimmufaauqhbisrgssq:PAWLnANKaREMspjE%21i7@aws-0-us-west-2.pooler.supabase.com:5432/postgres?pgbouncer=true
+```
+
+**Important:** 
+- Make sure you select **"Supavisor"** (Session Mode), not "Direct connection" or "Session Pooler" (which is deprecated).
+- The connection string **must include `?pgbouncer=true`** for Supavisor to work with IPv4.
 
 ## Troubleshooting
 

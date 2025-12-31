@@ -128,7 +128,8 @@ async function moveFileToPermanent(
   try {
     const { downloadFromSupabaseStorage, uploadToSupabaseStorage } = await import("@/lib/supabase-storage");
     
-    // Download from temp
+    // Download from temp bucket
+    // tempPath format: {sessionId}/{fileId}/{fileName} (bucket is "temp")
     const fileBuffer = await downloadFromSupabaseStorage("temp", tempPath);
     
     // Upload to permanent location

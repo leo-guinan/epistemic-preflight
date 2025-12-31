@@ -58,16 +58,20 @@ export async function POST(request: NextRequest) {
       bucketName = process.env.SUPABASE_STORAGE_BUCKET || "papers";
       userId = dbUser.id;
     } else {
-      // Anonymous user - check rate limit
-      const rateLimit = await checkRateLimit(ipAddress);
-      if (!rateLimit.allowed) {
-        return NextResponse.json(
-          { 
-            error: "Upload rate limit exceeded. Please sign in to continue uploading, or try again later.",
-            retryAfter: rateLimit.retryAfter 
-          },
-          { status: 429 }
-        );
+      // Anonymous user - check rate limit (skip in development if DISABLE_RATE_LIMIT is set)
+      if (process.env.DISABLE_RATE_LIMIT !== "true") {
+        const rateLimit = await checkRateLimit(ipAddress);
+        if (!rateLimit.allowed) {
+          return NextResponse.json(
+            { 
+              error: "Upload rate limit exceeded. Please sign in to continue uploading, or try again later.",
+              retryAfter: rateLimit.retryAfter 
+            },
+            { status: 429 }
+          );
+        }
+      } else {
+        console.log("[Upload Init] Rate limiting disabled for development");
       }
 
       // Generate session ID if not provided
@@ -80,7 +84,7 @@ export async function POST(request: NextRequest) {
     const fileId = randomUUID();
     const storagePath = userId 
       ? `${userId}/${fileId}/${fileName}` 
-      : `temp/${finalSessionId}/${fileId}/${fileName}`;
+      : `${finalSessionId}/${fileId}/${fileName}`; // Note: bucket is "temp", so path is just sessionId/fileId/fileName
     
     // Create processing job record
     const job = await prisma.processingJob.create({
