@@ -2,6 +2,7 @@
 
 import { useUser } from "@/lib/hooks/use-user";
 import { createClient } from "@/lib/supabase/client";
+import { clearPreflightState } from "@/lib/preflight-state";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
@@ -32,6 +33,13 @@ export function Navigation() {
     }
   };
 
+  const handleNewAnalysisClick = () => {
+    // Clear any saved preflight state so user starts fresh
+    clearPreflightState();
+    // Clear the OAuth flag if it exists
+    sessionStorage.removeItem("returning_from_oauth");
+  };
+
   // Don't show navigation on auth pages
   if (pathname?.startsWith("/auth")) {
     return null;
@@ -56,6 +64,7 @@ export function Navigation() {
           <Link 
             href="/preflight" 
             className={`${styles.navLink} ${pathname?.startsWith("/preflight") ? styles.active : ""}`}
+            onClick={handleNewAnalysisClick}
           >
             New Analysis
           </Link>
