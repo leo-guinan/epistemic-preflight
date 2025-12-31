@@ -1,12 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  webpack: (config, { isServer }) => {
-    // Exclude pdfjs-dist from server-side bundle
-    if (isServer) {
-      config.externals = config.externals || [];
-      config.externals.push('pdfjs-dist');
-    }
-    return config;
+  // Exclude pdfjs-dist from server-side bundle (Turbopack compatible)
+  serverExternalPackages: ['pdfjs-dist'],
+  // Turbopack configuration
+  turbopack: {
+    // Additional Turbopack config if needed
   },
 };
 
