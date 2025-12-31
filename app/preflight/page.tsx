@@ -383,6 +383,69 @@ export default function PreflightPage() {
     setState("synthesis-preview");
   };
 
+  const handleNarrowingApply = (rewrite: any) => {
+    console.log("[Preflight] Applying narrowed claim:", rewrite);
+    fathomEvents.claimNarrowingApplied?.();
+    
+    // Update the claims array with the narrowed version
+    if (rewrite.claimId && data.coreClaims) {
+      const updatedClaims = data.coreClaims.map((claim: any) => {
+        if (claim.id === rewrite.claimId) {
+          return {
+            ...claim,
+            text: rewrite.after, // Update claim text with narrowed version
+          };
+        }
+        return claim;
+      });
+      
+      setData({ ...data, coreClaims: updatedClaims });
+    }
+    
+    // Navigate back to agency moment to show updated state
+    setState("agency");
+  };
+
+  const handleNarrowingSeeImpact = () => {
+    console.log("[Preflight] Seeing impact of narrowing");
+    fathomEvents.narrowingImpactViewed?.();
+    // Navigate back to full analysis to see the impact
+    setState("full-analysis");
+  };
+
+  const handleNarrowingExport = (rewrite: any) => {
+    if (!rewrite) return;
+    console.log("[Preflight] Exporting reviewer-safe version");
+    fathomEvents.narrowingExported?.();
+    
+    // Create a downloadable version with the narrowed claim
+    if (rewrite && data.coreClaims) {
+      const updatedClaims = data.coreClaims.map((claim: any) => {
+        if (claim.id === rewrite.claimId) {
+          return { ...claim, text: rewrite.after };
+        }
+        return claim;
+      });
+      
+      const exportContent = {
+        paperContent: data.paperContent,
+        claims: updatedClaims,
+        narrowedClaim: rewrite,
+        timestamp: new Date().toISOString(),
+      };
+      
+      const blob = new Blob([JSON.stringify(exportContent, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `reviewer-safe-paper-${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  };
+
   return (
     <div className={styles.container}>
       {state === "intent" && (
@@ -480,6 +543,9 @@ export default function PreflightPage() {
           paperContent={data.paperContent || ""}
           paperFile={data.paperFile}
           onBack={handleBackToAgency}
+          onApply={handleNarrowingApply}
+          onSeeImpact={handleNarrowingSeeImpact}
+          onExport={handleNarrowingExport}
         />
       )}
     </div>

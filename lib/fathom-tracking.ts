@@ -26,6 +26,10 @@ export const trackFathomEvent = (eventName: string, value: number = 0) => {
 
 // Pre-defined event tracking functions for common actions
 export const fathomEvents = {
+  // Claim narrowing events
+  claimNarrowingApplied: () => trackFathomEvent('claim narrowing applied'),
+  narrowingImpactViewed: () => trackFathomEvent('narrowing impact viewed'),
+  narrowingExported: () => trackFathomEvent('narrowing exported'),
   // Intent declaration
   intentDeclared: (intent: string) => {
     trackFathomEvent('intent declared');

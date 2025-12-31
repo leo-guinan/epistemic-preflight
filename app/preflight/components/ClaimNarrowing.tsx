@@ -30,6 +30,9 @@ interface ClaimNarrowingProps {
   paperContent: string;
   paperFile?: File;
   onBack?: () => void;
+  onApply?: (rewrite: ClaimRewrite) => void;
+  onSeeImpact?: () => void;
+  onExport?: (rewrite: ClaimRewrite) => void;
 }
 
 export function ClaimNarrowing({
@@ -37,6 +40,9 @@ export function ClaimNarrowing({
   paperContent,
   paperFile,
   onBack,
+  onApply,
+  onSeeImpact,
+  onExport,
 }: ClaimNarrowingProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -280,14 +286,31 @@ export function ClaimNarrowing({
       {/* Step 4: Action Buttons */}
       {claimRewrite && (
         <div className={styles.actions}>
-          <button className={styles.primaryButton}>
+          <button 
+            className={styles.primaryButton}
+            onClick={() => {
+              if (claimRewrite && onApply) {
+                onApply(claimRewrite);
+              }
+            }}
+          >
             Apply narrowed claim
           </button>
           <div className={styles.secondaryButtons}>
-            <button className={styles.secondaryButton}>
+            <button 
+              className={styles.secondaryButton}
+              onClick={() => onSeeImpact?.()}
+            >
               See impact on synthesis/conflict
             </button>
-            <button className={styles.secondaryButton}>
+            <button 
+              className={styles.secondaryButton}
+              onClick={() => {
+                if (claimRewrite && onExport) {
+                  onExport(claimRewrite);
+                }
+              }}
+            >
               Export reviewer-safe version
             </button>
             <button 
