@@ -16,8 +16,9 @@ function loadDemoData(id: string): DemoPaper | null {
   }
 }
 
-export default function DemoPage({ params }: { params: { id: string } }) {
-  const demo = loadDemoData(params.id);
+export default async function DemoPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const demo = loadDemoData(id);
 
   if (!demo) {
     notFound();
