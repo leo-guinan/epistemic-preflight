@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { savePreflightState } from "@/lib/preflight-state";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -8,9 +9,11 @@ import styles from "./AuthPrompt.module.css";
 
 interface AuthPromptProps {
   onSignInComplete?: () => void;
+  currentState?: string;
+  currentData?: any;
 }
 
-export function AuthPrompt({ onSignInComplete }: AuthPromptProps) {
+export function AuthPrompt({ onSignInComplete, currentState, currentData }: AuthPromptProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const supabase = createClient();
@@ -18,6 +21,13 @@ export function AuthPrompt({ onSignInComplete }: AuthPromptProps) {
   const handleSignIn = async () => {
     try {
       setIsLoading(true);
+      
+      // Save current state to localStorage before redirecting
+      if (currentState && currentData) {
+        console.log("[AuthPrompt] Saving state before sign-in:", currentState);
+        savePreflightState(currentState, currentData);
+      }
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {

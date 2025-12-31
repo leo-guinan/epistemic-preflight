@@ -24,6 +24,7 @@
     "mastra": "beta",
     "next": "^16.0.0",
     "pdf-parse": "^1.1.4",
+    "pdfjs-dist": "^5.4.530",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "zod": "^3.23.8"

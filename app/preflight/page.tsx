@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@/lib/hooks/use-user";
+import { restorePreflightState, clearPreflightState, savePreflightState } from "@/lib/preflight-state";
 import { IntentDeclaration } from "./components/IntentDeclaration";
 import { PaperUpload } from "./components/PaperUpload";
 import { ImmediateAnalysis } from "./components/ImmediateAnalysis";
@@ -51,12 +52,121 @@ interface PreflightData {
   riskSignal?: string;
   comparators?: Array<File | string>;
   commitId?: string;
+  paperId?: string;
+  fullAnalysisResult?: any;
 }
 
 export default function PreflightPage() {
-  const { user } = useUser();
+  const { user, isLoading: userLoading } = useUser();
   const [state, setState] = useState<PreflightState>("intent");
   const [data, setData] = useState<PreflightData>({});
+  const [hasRestoredState, setHasRestoredState] = useState(false);
+
+  // Helper function to save paper to database
+  const savePaperToDatabase = async (paperData: PreflightData, currentState: string) => {
+    if (!user) return;
+
+    try {
+      const response = await fetch("/api/papers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: paperData.paperFile?.name || "Untitled Paper",
+          intent: paperData.intent,
+          targetVenue: paperData.targetVenue,
+          paperContent: paperData.paperContent || "",
+          fileName: paperData.paperFile?.name,
+          coreClaims: paperData.coreClaims || [],
+          riskSignal: paperData.riskSignal,
+          comparators: paperData.comparators?.map((c) => typeof c === "string" ? c : (c instanceof File ? c.name : String(c))) || [],
+          fullAnalysis: paperData.fullAnalysisResult || null,
+        }),
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log("[Preflight] Paper saved successfully:", result.paper.id);
+        // Clear saved state from localStorage since it's now in the database
+        clearPreflightState();
+        // Store paper ID for future reference
+        setData((prev) => ({ ...prev, paperId: result.paper.id }));
+      } else {
+        console.error("[Preflight] Failed to save paper:", await response.text());
+      }
+    } catch (error) {
+      console.error("[Preflight] Error saving paper:", error);
+      // Don't clear localStorage if save fails - user can try again
+    }
+  };
+
+  // Restore state from localStorage on mount (if user just signed in)
+  useEffect(() => {
+    if (!hasRestoredState && !userLoading) {
+      const savedState = restorePreflightState();
+      if (savedState) {
+        console.log("[Preflight] Restoring saved state:", savedState.state);
+        setState(savedState.state as PreflightState);
+        setData(savedState.data);
+        setHasRestoredState(true);
+      } else {
+        setHasRestoredState(true);
+      }
+    }
+  }, [userLoading, hasRestoredState]);
+
+  // Save to database when user becomes available after restoring state
+  useEffect(() => {
+    if (hasRestoredState && user && data.paperContent && !data.paperId) {
+      // User just signed in and we have restored state - save to database
+      console.log("[Preflight] User signed in, saving restored paper to database");
+      savePaperToDatabase(data, state);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, hasRestoredState, data.paperContent, data.paperId, state]);
+
+  // Save state to localStorage whenever it changes (but not on initial restore)
+  useEffect(() => {
+    if (hasRestoredState && state !== "intent") {
+      savePreflightState(state, data);
+    }
+  }, [state, data, hasRestoredState]);
+
+  // Helper function to save paper to database
+  const savePaperToDatabase = async (paperData: PreflightData, currentState: string) => {
+    if (!user) return;
+
+    try {
+      const response = await fetch("/api/papers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: paperData.paperFile?.name || "Untitled Paper",
+          intent: paperData.intent,
+          targetVenue: paperData.targetVenue,
+          paperContent: paperData.paperContent || "",
+          fileName: paperData.paperFile?.name,
+          coreClaims: paperData.coreClaims || [],
+          riskSignal: paperData.riskSignal,
+          comparators: paperData.comparators?.map((c) => typeof c === "string" ? c : (c instanceof File ? c.name : String(c))) || [],
+          fullAnalysis: paperData.fullAnalysisResult || null,
+        }),
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log("[Preflight] Paper saved successfully:", result.paper.id);
+        // Clear saved state from localStorage since it's now in the database
+        clearPreflightState();
+        // Store paper ID for future reference
+        setData({ ...paperData, paperId: result.paper.id });
+      } else {
+        console.error("[Preflight] Failed to save paper:", await response.text());
+      }
+    } catch (error) {
+      console.error("[Preflight] Error saving paper:", error);
+      // Don't clear localStorage if save fails - user can try again
+    }
+  };
 
   const handleIntentSubmit = (intent: PaperIntent, venue?: string) => {
     fathomEvents.intentDeclared(intent);
@@ -68,6 +178,7 @@ export default function PreflightPage() {
     console.log("[Preflight] Paper upload started");
     console.log("[Preflight] Has file:", !!file);
     console.log("[Preflight] Has content:", !!content);
+    console.log("[Preflight] Content length:", content.length);
     console.log("[Preflight] File name:", file?.name);
     
     // Track paper upload
@@ -82,29 +193,34 @@ export default function PreflightPage() {
     try {
       console.log("[Preflight] Sending request to API...");
       
+      // If we have text content (from client-side PDF processing), send as JSON
+      // This avoids Vercel's 4.5MB request limit
+      // Only send file via FormData if we don't have text content yet
       let response: Response;
       
-      if (file) {
-        // Send file via FormData
+      if (content && content.trim().length > 0) {
+        // Send text content as JSON (even if we have a file - file is just for metadata)
+        console.log("[Preflight] Sending text content as JSON (client-side processed)");
+        response = await fetch("/api/preflight/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            paperContent: content,
+            fileName: file?.name, // Include filename for reference
+          }),
+        });
+      } else if (file) {
+        // Fallback: Send file via FormData (for non-PDF files or if client-side processing failed)
         console.log("[Preflight] Sending file via FormData");
         const formData = new FormData();
         formData.append("file", file);
-        if (content) {
-          formData.append("paperContent", content);
-        }
         
         response = await fetch("/api/preflight/analyze", {
           method: "POST",
           body: formData, // Don't set Content-Type header - browser will set it with boundary
         });
       } else {
-        // Send text content as JSON
-        console.log("[Preflight] Sending text content as JSON");
-        response = await fetch("/api/preflight/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ paperContent: content }),
-        });
+        throw new Error("No content or file provided");
       }
       
       console.log("[Preflight] Response status:", response.status);
@@ -157,35 +273,53 @@ export default function PreflightPage() {
   const handleFullAnalysisComplete = async (fullAnalysis?: any) => {
     fathomEvents.fullAnalysisCompleted();
     
+    // Store full analysis in data
+    const updatedData = { ...data, fullAnalysisResult: fullAnalysis };
+    setData(updatedData);
+    
     // Save paper if user is signed in
     if (user) {
-      try {
-        const response = await fetch("/api/papers", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            title: data.paperFile?.name || "Untitled Paper",
-            intent: data.intent,
-            targetVenue: data.targetVenue,
-            paperContent: data.paperContent || "",
-            fileName: data.paperFile?.name,
-            coreClaims: data.coreClaims || [],
-            riskSignal: data.riskSignal,
-            comparators: data.comparators?.map((c) => typeof c === "string" ? c : (c as File).name) || [],
-            fullAnalysis: fullAnalysis || null,
-          }),
-        });
-        
-        if (response.ok) {
-          console.log("[Preflight] Paper saved successfully");
-        }
-      } catch (error) {
-        console.error("[Preflight] Error saving paper:", error);
-        // Continue even if save fails
-      }
+      await savePaperToDatabase(updatedData, "agency");
     }
     
     setState("agency");
+  };
+
+  // Helper function to save paper to database
+  const savePaperToDatabase = async (paperData: PreflightData, currentState: string) => {
+    if (!user) return;
+
+    try {
+      const response = await fetch("/api/papers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: paperData.paperFile?.name || "Untitled Paper",
+          intent: paperData.intent,
+          targetVenue: paperData.targetVenue,
+          paperContent: paperData.paperContent || "",
+          fileName: paperData.paperFile?.name,
+          coreClaims: paperData.coreClaims || [],
+          riskSignal: paperData.riskSignal,
+          comparators: paperData.comparators?.map((c) => typeof c === "string" ? c : (c instanceof File ? c.name : String(c))) || [],
+          fullAnalysis: paperData.fullAnalysisResult || null,
+        }),
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log("[Preflight] Paper saved successfully:", result.paper.id);
+        // Clear saved state from localStorage since it's now in the database
+        clearPreflightState();
+        // Store paper ID for future reference
+        setData({ ...paperData, paperId: result.paper.id });
+      } else {
+        console.error("[Preflight] Failed to save paper:", await response.text());
+      }
+    } catch (error) {
+      console.error("[Preflight] Error saving paper:", error);
+      // Don't clear localStorage if save fails - user can try again
+    }
   };
 
   const handleAgencyChoice = (choiceId: string) => {
@@ -254,6 +388,8 @@ export default function PreflightPage() {
           claims={data.coreClaims || []}
           riskSignal={data.riskSignal}
           onChoiceSelect={handleAgencyChoice}
+          currentState={state}
+          currentData={data}
         />
       )}
       {state === "synthesis-preview" && (

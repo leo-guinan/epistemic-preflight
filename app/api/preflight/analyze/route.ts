@@ -6,7 +6,7 @@ import { processPDF } from "@/lib/pdf-processor";
 const analyzeRequestSchema = z.object({
   paperContent: z.string().min(1).optional(),
   file: z.string().optional(), // base64 encoded file
-  fileName: z.string().optional(),
+  fileName: z.string().optional(), // Filename for reference (when content is client-processed)
 });
 
 export async function POST(request: NextRequest) {
@@ -75,6 +75,7 @@ export async function POST(request: NextRequest) {
       } else if (parsed.paperContent) {
         console.log("[API] Using paperContent from JSON");
         paperContent = parsed.paperContent;
+        fileName = parsed.fileName; // Get filename from JSON if provided
       } else {
         throw new Error("No paperContent or file provided");
       }

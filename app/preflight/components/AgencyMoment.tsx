@@ -16,9 +16,11 @@ interface AgencyMomentProps {
   claims: Claim[];
   riskSignal?: string;
   onChoiceSelect?: (choiceId: string) => void;
+  currentState?: string;
+  currentData?: any;
 }
 
-export function AgencyMoment({ claims, riskSignal, onChoiceSelect }: AgencyMomentProps) {
+export function AgencyMoment({ claims, riskSignal, onChoiceSelect, currentState, currentData }: AgencyMomentProps) {
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const { user } = useUser();
 
@@ -97,7 +99,7 @@ export function AgencyMoment({ claims, riskSignal, onChoiceSelect }: AgencyMomen
       )}
 
       {/* Show auth prompt only if user is not signed in (after they've seen the full analysis) */}
-      {!user && <AuthPrompt />}
+      {!user && <AuthPrompt currentState={currentState} currentData={currentData} />}
 
       <div className={styles.footer}>
         <p className={styles.footerText}>
