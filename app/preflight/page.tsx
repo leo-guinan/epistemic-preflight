@@ -99,11 +99,17 @@ export default function PreflightPage() {
     }
   };
 
-  // Restore state from localStorage on mount (if user just signed in)
+  // Restore state from localStorage on mount (only if returning from OAuth or has actual progress)
   useEffect(() => {
     if (!hasRestoredState && !userLoading) {
+      // Check if we're returning from OAuth (check sessionStorage flag)
+      const returningFromOAuth = sessionStorage.getItem("returning_from_oauth") === "true";
+      
+      // Only restore state if:
+      // 1. We're returning from OAuth, OR
+      // 2. There's saved state with actual paper content (not just intent)
       const savedState = restorePreflightState();
-      if (savedState) {
+      if (savedState && (returningFromOAuth || savedState.data.paperContent)) {
         console.log("[Preflight] Restoring saved state:", savedState.state);
         setState(savedState.state as PreflightState);
         // Type-safe restoration: cast intent to PaperIntent if it's a valid value
@@ -113,7 +119,16 @@ export default function PreflightPage() {
         };
         setData(restoredData);
         setHasRestoredState(true);
+        // Clear the OAuth flag after using it
+        if (returningFromOAuth) {
+          sessionStorage.removeItem("returning_from_oauth");
+        }
       } else {
+        // Clear stale state if it exists but shouldn't be restored
+        if (savedState && !returningFromOAuth && !savedState.data.paperContent) {
+          console.log("[Preflight] Clearing stale state, starting fresh");
+          clearPreflightState();
+        }
         setHasRestoredState(true);
       }
     }
@@ -129,10 +144,13 @@ export default function PreflightPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, hasRestoredState, data.paperContent, data.paperId, state]);
 
-  // Save state to localStorage whenever it changes (but not on initial restore)
+  // Save state to localStorage whenever it changes (but not on initial restore or if at intent step)
   useEffect(() => {
     if (hasRestoredState && state !== "intent") {
       savePreflightState(state, data);
+    } else if (hasRestoredState && state === "intent") {
+      // Clear any stale state when user is at intent step (fresh start)
+      clearPreflightState();
     }
   }, [state, data, hasRestoredState]);
 

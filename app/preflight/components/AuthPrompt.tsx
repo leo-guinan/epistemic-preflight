@@ -28,6 +28,9 @@ export function AuthPrompt({ onSignInComplete, currentState, currentData }: Auth
         savePreflightState(currentState, currentData);
       }
       
+      // Set flag in sessionStorage to indicate we're going through OAuth
+      sessionStorage.setItem("returning_from_oauth", "true");
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
@@ -37,11 +40,13 @@ export function AuthPrompt({ onSignInComplete, currentState, currentData }: Auth
 
       if (error) {
         console.error("Sign in error:", error);
+        sessionStorage.removeItem("returning_from_oauth");
         alert("Failed to sign in. Please try again.");
       }
       // User will be redirected, so onSignInComplete will be called after redirect
     } catch (error) {
       console.error("Sign in error:", error);
+      sessionStorage.removeItem("returning_from_oauth");
       alert("Failed to sign in. Please try again.");
     } finally {
       setIsLoading(false);
