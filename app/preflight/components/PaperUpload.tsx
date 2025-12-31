@@ -140,7 +140,6 @@ export function PaperUpload({ onSubmit }: PaperUploadProps) {
       }
       
       // Show progress for long-running processing
-      const attempt = i + 1;
       if (data.status === "processing") {
         console.log(`[Upload] Still processing... (attempt ${attempt}/${maxAttempts}, ~${Math.round(attempt * pollInterval / 1000)}s elapsed)`);
         setProcessingProgress(`Processing PDF... (${Math.round(attempt * pollInterval / 1000)}s)`);
