@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { fathomEvents } from "@/lib/fathom-tracking";
 import styles from "./page.module.css";
 
 export default function DemosPage() {
@@ -63,6 +64,12 @@ export default function DemosPage() {
             key={demo.id}
             href={`/demos/${demo.id}`}
             className={styles.demoCard}
+            onClick={() => {
+              // Track demo card click
+              fathomEvents.demoCardClicked(demo.id);
+              // Store demo ID in sessionStorage to attribute signups
+              sessionStorage.setItem('last_viewed_demo', demo.id);
+            }}
           >
             <div className={styles.demoHeader}>
               <h2 className={styles.demoTitle}>{demo.title}</h2>
