@@ -131,43 +131,6 @@ export default function PreflightPage() {
     }
   }, [state, data, hasRestoredState]);
 
-  // Helper function to save paper to database
-  const savePaperToDatabase = async (paperData: PreflightData, currentState: string) => {
-    if (!user) return;
-
-    try {
-      const response = await fetch("/api/papers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: paperData.paperFile?.name || "Untitled Paper",
-          intent: paperData.intent,
-          targetVenue: paperData.targetVenue,
-          paperContent: paperData.paperContent || "",
-          fileName: paperData.paperFile?.name,
-          coreClaims: paperData.coreClaims || [],
-          riskSignal: paperData.riskSignal,
-          comparators: paperData.comparators?.map((c) => typeof c === "string" ? c : (c instanceof File ? c.name : String(c))) || [],
-          fullAnalysis: paperData.fullAnalysisResult || null,
-        }),
-      });
-      
-      if (response.ok) {
-        const result = await response.json();
-        console.log("[Preflight] Paper saved successfully:", result.paper.id);
-        // Clear saved state from localStorage since it's now in the database
-        clearPreflightState();
-        // Store paper ID for future reference
-        setData({ ...paperData, paperId: result.paper.id });
-      } else {
-        console.error("[Preflight] Failed to save paper:", await response.text());
-      }
-    } catch (error) {
-      console.error("[Preflight] Error saving paper:", error);
-      // Don't clear localStorage if save fails - user can try again
-    }
-  };
-
   const handleIntentSubmit = (intent: PaperIntent, venue?: string) => {
     fathomEvents.intentDeclared(intent);
     setData({ ...data, intent, targetVenue: venue });
@@ -283,43 +246,6 @@ export default function PreflightPage() {
     }
     
     setState("agency");
-  };
-
-  // Helper function to save paper to database
-  const savePaperToDatabase = async (paperData: PreflightData, currentState: string) => {
-    if (!user) return;
-
-    try {
-      const response = await fetch("/api/papers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: paperData.paperFile?.name || "Untitled Paper",
-          intent: paperData.intent,
-          targetVenue: paperData.targetVenue,
-          paperContent: paperData.paperContent || "",
-          fileName: paperData.paperFile?.name,
-          coreClaims: paperData.coreClaims || [],
-          riskSignal: paperData.riskSignal,
-          comparators: paperData.comparators?.map((c) => typeof c === "string" ? c : (c instanceof File ? c.name : String(c))) || [],
-          fullAnalysis: paperData.fullAnalysisResult || null,
-        }),
-      });
-      
-      if (response.ok) {
-        const result = await response.json();
-        console.log("[Preflight] Paper saved successfully:", result.paper.id);
-        // Clear saved state from localStorage since it's now in the database
-        clearPreflightState();
-        // Store paper ID for future reference
-        setData({ ...paperData, paperId: result.paper.id });
-      } else {
-        console.error("[Preflight] Failed to save paper:", await response.text());
-      }
-    } catch (error) {
-      console.error("[Preflight] Error saving paper:", error);
-      // Don't clear localStorage if save fails - user can try again
-    }
   };
 
   const handleAgencyChoice = (choiceId: string) => {
