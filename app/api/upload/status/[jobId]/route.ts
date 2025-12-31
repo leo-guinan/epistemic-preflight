@@ -7,27 +7,38 @@ export async function GET(
   { params }: { params: Promise<{ jobId: string }> }
 ) {
   try {
-    const user = await getUser();
-    if (!user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { jobId } = await params;
-    
-    const dbUser = await prisma.user.findUnique({
-      where: { email: user.email },
-    });
-
-    if (!dbUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    const sessionId = request.nextUrl.searchParams.get("sessionId");
     
     const job = await prisma.processingJob.findUnique({
       where: { id: jobId },
     });
 
-    if (!job || job.userId !== dbUser.id) {
+    if (!job) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
+    }
+
+    // Check authorization: either user owns it, or it's an anonymous job with matching session
+    const user = await getUser();
+    
+    if (job.userId) {
+      // Authenticated job - verify user owns it
+      if (!user?.email) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      
+      const dbUser = await prisma.user.findUnique({
+        where: { email: user.email },
+      });
+
+      if (!dbUser || job.userId !== dbUser.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      }
+    } else {
+      // Anonymous job - verify session ID matches
+      if (!sessionId || job.sessionId !== sessionId) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
     }
 
     return NextResponse.json({

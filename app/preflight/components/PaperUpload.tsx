@@ -107,9 +107,23 @@ export function PaperUpload({ onSubmit }: PaperUploadProps) {
   const pollForProcessing = async (jobId: string): Promise<{ extractedText: string }> => {
     const maxAttempts = 60; // 5 minutes max
     const pollInterval = 5000; // 5 seconds
+    const sessionId = sessionStorage.getItem("preflight_session_id");
     
     for (let i = 0; i < maxAttempts; i++) {
-      const response = await fetch(`/api/upload/status/${jobId}`);
+      // Include sessionId for anonymous jobs
+      const url = sessionId 
+        ? `/api/upload/status/${jobId}?sessionId=${encodeURIComponent(sessionId)}`
+        : `/api/upload/status/${jobId}`;
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          throw new Error("Unauthorized to check job status");
+        }
+        throw new Error(`Failed to check status: ${response.status}`);
+      }
+      
       const data = await response.json();
       
       if (data.status === "completed") {
