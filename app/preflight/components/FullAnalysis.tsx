@@ -6,7 +6,7 @@ import styles from "./FullAnalysis.module.css";
 interface FullAnalysisProps {
   paperContent: string;
   comparators: Array<File | string>;
-  onComplete: () => void;
+  onComplete: (analysis?: any) => void;
 }
 
 export function FullAnalysis({
@@ -182,7 +182,7 @@ export function FullAnalysis({
       </div>
 
       <div className={styles.actions}>
-        <button onClick={onComplete} className={styles.continueButton}>
+        <button onClick={() => onComplete(analysis)} className={styles.continueButton}>
           Continue to Next Steps
         </button>
       </div>

@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // directUrl is optional - only needed if using connection pooling
+  // directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String    @id // Use Supabase auth user ID
+  email         String    @unique
+  name          String?
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  papers        Paper[]
+}
+
+model Paper {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title            String?
+  intent           String?
+  targetVenue      String?
+  paperContent     String   @db.Text
+  fileName         String?
+  coreClaims       String   @db.Text // JSON string of claims array
+  riskSignal       String?  @db.Text
+  comparators      String?  @db.Text // JSON string of comparators
+  fullAnalysis     String?  @db.Text // JSON string of full analysis results
+  commitId         String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([userId])
+}
+

@@ -1,0 +1,79 @@
+"use client";
+
+import { createClient } from "@/lib/supabase/client";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import styles from "./AuthPrompt.module.css";
+
+interface AuthPromptProps {
+  onSignInComplete?: () => void;
+}
+
+export function AuthPrompt({ onSignInComplete }: AuthPromptProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const supabase = createClient();
+
+  const handleSignIn = async () => {
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(window.location.pathname)}`,
+        },
+      });
+
+      if (error) {
+        console.error("Sign in error:", error);
+        alert("Failed to sign in. Please try again.");
+      }
+      // User will be redirected, so onSignInComplete will be called after redirect
+    } catch (error) {
+      console.error("Sign in error:", error);
+      alert("Failed to sign in. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.content}>
+        <h2 className={styles.title}>Save Your Progress</h2>
+        <p className={styles.description}>
+          Create a free account to save your analysis, track your changes, and
+          access your paper revisions anytime.
+        </p>
+        <div className={styles.benefits}>
+          <div className={styles.benefit}>
+            <span className={styles.benefitIcon}>✓</span>
+            <span>Save your analysis and revisions</span>
+          </div>
+          <div className={styles.benefit}>
+            <span className={styles.benefitIcon}>✓</span>
+            <span>Track changes over time</span>
+          </div>
+          <div className={styles.benefit}>
+            <span className={styles.benefitIcon}>✓</span>
+            <span>Export and share your work</span>
+          </div>
+        </div>
+        <button 
+          onClick={handleSignIn} 
+          className={styles.signInButton}
+          disabled={isLoading}
+        >
+          {isLoading ? "Signing in..." : "Sign in with Google"}
+        </button>
+        <p className={styles.skipText}>
+          You can continue without signing in, but your progress won't be saved.
+        </p>
+        <Link href="/dashboard" className={styles.dashboardLink}>
+          View My Papers →
+        </Link>
+      </div>
+    </div>
+  );
+}

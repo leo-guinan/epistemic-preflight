@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useUser } from "@/lib/hooks/use-user";
 import { IntentDeclaration } from "./components/IntentDeclaration";
 import { PaperUpload } from "./components/PaperUpload";
 import { ImmediateAnalysis } from "./components/ImmediateAnalysis";
@@ -53,6 +54,7 @@ interface PreflightData {
 }
 
 export default function PreflightPage() {
+  const { user } = useUser();
   const [state, setState] = useState<PreflightState>("intent");
   const [data, setData] = useState<PreflightData>({});
 
@@ -152,8 +154,37 @@ export default function PreflightPage() {
     setState("full-analysis");
   };
 
-  const handleFullAnalysisComplete = () => {
+  const handleFullAnalysisComplete = async (fullAnalysis?: any) => {
     fathomEvents.fullAnalysisCompleted();
+    
+    // Save paper if user is signed in
+    if (user) {
+      try {
+        const response = await fetch("/api/papers", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: data.paperFile?.name || "Untitled Paper",
+            intent: data.intent,
+            targetVenue: data.targetVenue,
+            paperContent: data.paperContent || "",
+            fileName: data.paperFile?.name,
+            coreClaims: data.coreClaims || [],
+            riskSignal: data.riskSignal,
+            comparators: data.comparators?.map((c) => typeof c === "string" ? c : (c as File).name) || [],
+            fullAnalysis: fullAnalysis || null,
+          }),
+        });
+        
+        if (response.ok) {
+          console.log("[Preflight] Paper saved successfully");
+        }
+      } catch (error) {
+        console.error("[Preflight] Error saving paper:", error);
+        // Continue even if save fails
+      }
+    }
+    
     setState("agency");
   };
 

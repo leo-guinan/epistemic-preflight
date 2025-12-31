@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { FathomAnalytics } from "./fathom";
+import { SessionProvider } from "./providers";
 
 export const metadata: Metadata = {
   title: "Epistemic Preflight - See How Your Paper Will Be Read",
@@ -15,8 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <FathomAnalytics />
-        {children}
+        <SessionProvider>
+          <FathomAnalytics />
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );

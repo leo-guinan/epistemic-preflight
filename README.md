@@ -29,19 +29,37 @@ pnpm install
 cp .env.example .env
 ```
 
-Edit `.env` and add your OpenAI API key:
+Edit `.env` and add your OpenAI API key and other required variables:
 
 ```
 OPENAI_API_KEY=your-api-key-here
+DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres
+NEXT_PUBLIC_SUPABASE_URL=https://[PROJECT_REF].supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-3. Run the development server:
+3. Set up Supabase:
+
+   a. Create a new project at [supabase.com](https://supabase.com)
+   
+   b. Get your connection string from: Settings → Database → Connection String → URI
+   
+   c. Set up the database schema:
+
+```bash
+pnpm db:generate
+pnpm db:migrate
+```
+
+This creates the database tables and generates the Prisma client.
+
+4. Run the development server:
 
 ```bash
 pnpm dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Project Structure
 
@@ -71,7 +89,15 @@ epistemic-preflight/
 4. **Immediate Analysis** - Core claims extraction (WOW moment)
 5. **Comparator Selection** - Upload or paste comparator papers
 6. **Full Analysis** - Complete epistemic analysis
-7. **Agency Moment** - User chooses next steps
+7. **Agency Moment** - User chooses next steps (auth prompt appears here)
+
+### Database
+
+The application uses **Supabase** (PostgreSQL) for data persistence. All user papers and analysis results are stored in Supabase. See [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) for detailed setup instructions.
+
+### Authentication
+
+Authentication is handled via **Supabase Auth** with Google OAuth. Users can use the full analysis flow without signing in, but an auth prompt appears after the full analysis completes (at the Agency Moment). Users can continue without signing in, but their progress won't be saved. User accounts are automatically created in Supabase when they first sign in.
 
 ### MVP Focus
 
@@ -93,6 +119,12 @@ epistemic-preflight/
 
 - `OPENAI_API_KEY` - Required for LLM operations
 - `NEXT_PUBLIC_FATHOM_ID` - Optional. Fathom Analytics site ID (defaults to `XJKVDZER` if not set)
+- `NEXT_PUBLIC_SUPABASE_URL` - Required. Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Required. Your Supabase anonymous/public key
+- `DATABASE_URL` - Supabase PostgreSQL connection string (get from Supabase dashboard → Settings → Database → Connection String → URI)
+- `DIRECT_URL` - (Optional) Direct connection URL for migrations. If not set, DATABASE_URL will be used. Useful if using connection pooling.
+- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL (optional, for Supabase client features)
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key (optional, for Supabase client features)
 
 ### Analytics
 

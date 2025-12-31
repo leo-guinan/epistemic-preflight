@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useUser } from "@/lib/hooks/use-user";
 import styles from "./AgencyMoment.module.css";
+import { AuthPrompt } from "./AuthPrompt";
 
 interface Claim {
   id: string;
@@ -18,6 +20,7 @@ interface AgencyMomentProps {
 
 export function AgencyMoment({ claims, riskSignal, onChoiceSelect }: AgencyMomentProps) {
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
+  const { user } = useUser();
 
   const choices = [
     {
@@ -92,6 +95,9 @@ export function AgencyMoment({ claims, riskSignal, onChoiceSelect }: AgencyMomen
           </p>
         </div>
       )}
+
+      {/* Show auth prompt only if user is not signed in (after they've seen the full analysis) */}
+      {!user && <AuthPrompt />}
 
       <div className={styles.footer}>
         <p className={styles.footerText}>
