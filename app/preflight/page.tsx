@@ -144,6 +144,64 @@ export default function PreflightPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, hasRestoredState, data.paperContent, data.paperId, state]);
 
+  // Process pending anonymous uploads after sign-in
+  useEffect(() => {
+    if (hasRestoredState && user && !userLoading) {
+      const sessionId = sessionStorage.getItem("preflight_session_id");
+      if (sessionId) {
+        // Check for pending uploads and process them
+        processPendingUploads(sessionId).catch((error) => {
+          console.error("[Preflight] Error processing pending uploads:", error);
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, hasRestoredState, userLoading]);
+
+  const processPendingUploads = async (sessionId: string) => {
+    try {
+      const response = await fetch(`/api/upload/pending?sessionId=${encodeURIComponent(sessionId)}`);
+      if (!response.ok) return;
+      
+      const { jobs } = await response.json();
+      if (!jobs || jobs.length === 0) return;
+
+      console.log("[Preflight] Found pending uploads:", jobs.length);
+      
+      // Process each pending upload
+      for (const job of jobs) {
+        try {
+          const completeResponse = await fetch("/api/upload/complete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+              jobId: job.jobId,
+              sessionId: sessionId,
+            }),
+          });
+
+          if (completeResponse.ok) {
+            console.log("[Preflight] Processed pending upload:", job.fileName);
+            // Poll for completion and continue with the flow
+            const statusResponse = await fetch(`/api/upload/status/${job.jobId}`);
+            if (statusResponse.ok) {
+              const statusData = await statusResponse.json();
+              if (statusData.status === "completed" && statusData.extractedText) {
+                // Continue with the analysis flow
+                handlePaperUpload(statusData.extractedText);
+                break; // Only process the first one
+              }
+            }
+          }
+        } catch (error) {
+          console.error("[Preflight] Error processing job:", job.jobId, error);
+        }
+      }
+    } catch (error) {
+      console.error("[Preflight] Error fetching pending uploads:", error);
+    }
+  };
+
   // Save state to localStorage whenever it changes (but not on initial restore or if at intent step)
   useEffect(() => {
     if (hasRestoredState && state !== "intent") {
