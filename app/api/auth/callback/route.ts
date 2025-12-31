@@ -9,12 +9,17 @@ export async function GET(request: NextRequest) {
   const errorDescription = requestUrl.searchParams.get("error_description");
   const next = requestUrl.searchParams.get("next") ?? "/dashboard";
 
+  // Log all query parameters for debugging
+  const allParams = Object.fromEntries(requestUrl.searchParams.entries());
   console.log("[Auth Callback] Request received:", {
+    url: requestUrl.toString(),
+    origin: requestUrl.origin,
+    pathname: requestUrl.pathname,
+    allQueryParams: allParams,
     code: code ? "present" : "missing",
     error,
     errorDescription,
     next,
-    origin: requestUrl.origin,
   });
 
   // Check for OAuth errors
