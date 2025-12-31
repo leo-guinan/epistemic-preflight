@@ -53,14 +53,11 @@ export function PaperUpload({ onSubmit }: PaperUploadProps) {
         
         if (!initResponse.ok) {
           const error = await initResponse.json();
-          if (error.requiresAuth) {
-            throw new Error("Please sign in to upload and process files.");
-          }
           throw new Error(error.error || "Failed to initialize upload");
         }
         
-        const { jobId, storagePath, bucket, requiresAuth, sessionId: returnedSessionId } = await initResponse.json();
-        console.log("[Upload] Upload initialized, jobId:", jobId, "requiresAuth:", requiresAuth);
+        const { jobId, storagePath, bucket, sessionId: returnedSessionId } = await initResponse.json();
+        console.log("[Upload] Upload initialized, jobId:", jobId);
         
         // Store session ID if returned
         if (returnedSessionId) {
@@ -85,11 +82,6 @@ export function PaperUpload({ onSubmit }: PaperUploadProps) {
         
         if (!completeResponse.ok) {
           const error = await completeResponse.json();
-          if (error.requiresAuth) {
-            // Store jobId in sessionStorage so we can retry after sign-in
-            sessionStorage.setItem("pending_job_id", jobId);
-            throw new Error("Please sign in to process your file. Your file has been uploaded and will be processed after you sign in.");
-          }
           throw new Error(error.error || "Failed to complete upload");
         }
         

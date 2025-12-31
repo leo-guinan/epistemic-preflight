@@ -6,7 +6,7 @@ import { randomUUID } from "crypto";
 /**
  * Mark upload as complete and trigger processing.
  * Called by the client after successfully uploading directly to Supabase Storage.
- * For anonymous uploads, requires authentication to process.
+ * Allows anonymous processing - files stay in temp bucket until user signs in.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -26,32 +26,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
 
-    // Check authorization
-    if (job.userId) {
-      // Authenticated job - verify user owns it
-      if (!user || job.userId !== user.id) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-      }
-    } else {
-      // Anonymous job - require authentication to process
-      if (!user) {
-        return NextResponse.json(
-          { 
-            error: "Authentication required to process file",
-            requiresAuth: true,
-            sessionId: job.sessionId 
-          },
-          { status: 401 }
-        );
-      }
+    // Verify session ID matches for anonymous jobs
+    if (!job.userId && sessionId && job.sessionId !== sessionId) {
+      return NextResponse.json({ error: "Session mismatch" }, { status: 403 });
+    }
 
+    // If authenticated and job is anonymous, link it to user account
+    if (user && !job.userId) {
       // Verify session ID matches (if provided)
       if (sessionId && job.sessionId !== sessionId) {
         return NextResponse.json({ error: "Session mismatch" }, { status: 403 });
       }
 
       // Link anonymous job to user account
-      // Find or create user
       if (!user.email) {
         return NextResponse.json(
           { error: "User email is required" },
@@ -86,7 +73,13 @@ export async function POST(request: NextRequest) {
           bucket: process.env.SUPABASE_STORAGE_BUCKET || "papers",
         },
       });
+    } else if (job.userId && user) {
+      // Authenticated job - verify user owns it
+      if (job.userId !== user.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      }
     }
+    // Anonymous jobs can proceed without auth - file stays in temp bucket
 
     // Get updated job (in case path changed)
     const updatedJob = await prisma.processingJob.findUnique({
