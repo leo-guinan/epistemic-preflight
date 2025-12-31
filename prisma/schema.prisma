@@ -50,7 +50,7 @@ model ProcessingJob {
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   fileName      String
   storageKey    String   // Supabase Storage path
-  status        String   // "uploaded" | "processing" | "completed" | "failed"
+  status        String   // "uploading" | "uploaded" | "processing" | "completed" | "failed"
   extractedText String?  @db.Text
   error         String?  @db.Text
   createdAt     DateTime @default(now())

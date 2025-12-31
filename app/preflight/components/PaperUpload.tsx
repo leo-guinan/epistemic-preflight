@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import styles from "./PaperUpload.module.css";
+import { uploadFileDirectly } from "@/lib/supabase-storage-client";
 
 interface PaperUploadProps {
   onSubmit: (content: string, file?: File) => void;
@@ -29,26 +30,45 @@ export function PaperUpload({ onSubmit }: PaperUploadProps) {
     try {
       if (uploadMethod === "file" && file) {
         console.log("[Upload] Uploading file:", file.name, file.size, "bytes");
-        setProcessingProgress("Uploading file...");
         
-        // Upload to Supabase Storage and get processing job ID
-        const formData = new FormData();
-        formData.append("file", file);
-        
-        const uploadResponse = await fetch("/api/upload", {
+        // Step 1: Initialize upload job (get storage path)
+        setProcessingProgress("Initializing upload...");
+        const initResponse = await fetch("/api/upload/init", {
           method: "POST",
-          body: formData,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fileName: file.name,
+            fileSize: file.size,
+          }),
         });
         
-        if (!uploadResponse.ok) {
-          const error = await uploadResponse.json();
-          throw new Error(error.error || "Failed to upload file");
+        if (!initResponse.ok) {
+          const error = await initResponse.json();
+          throw new Error(error.error || "Failed to initialize upload");
         }
         
-        const { jobId } = await uploadResponse.json();
-        console.log("[Upload] File uploaded, jobId:", jobId);
+        const { jobId, storagePath, bucket } = await initResponse.json();
+        console.log("[Upload] Upload initialized, jobId:", jobId);
         
-        // Poll for processing completion
+        // Step 2: Upload directly to Supabase Storage (bypasses Vercel)
+        setProcessingProgress("Uploading file to storage...");
+        await uploadFileDirectly(bucket, storagePath, file);
+        console.log("[Upload] File uploaded directly to Supabase Storage");
+        
+        // Step 3: Mark upload as complete and trigger processing
+        setProcessingProgress("Starting processing...");
+        const completeResponse = await fetch("/api/upload/complete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jobId }),
+        });
+        
+        if (!completeResponse.ok) {
+          const error = await completeResponse.json();
+          throw new Error(error.error || "Failed to complete upload");
+        }
+        
+        // Step 4: Poll for processing completion
         setProcessingProgress("Processing PDF...");
         const result = await pollForProcessing(jobId);
         

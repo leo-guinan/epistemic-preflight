@@ -29,11 +29,38 @@ This guide will help you set up Supabase for the Epistemic Preflight application
 4. Make it **Private** (files are user-scoped)
 5. Click **Create bucket**
 
-**Optional: Set up storage policies** (recommended for production):
-- Go to **Storage** → **Policies** → **papers** bucket
-- Create policy: "Users can upload their own files"
-- Create policy: "Users can read their own files"
-- Create policy: "Users can delete their own files"
+**Required: Set up storage policies** (needed for direct client uploads):
+1. Go to **Storage** → **Policies** → **papers** bucket
+2. Click **New Policy** → **For full customization**
+3. Create an **INSERT** policy:
+   - Policy name: "Users can upload their own files"
+   - Allowed operation: **INSERT** (check the INSERT checkbox)
+   - Target roles: **authenticated** (select from dropdown)
+   - Policy definition (single expression field):
+     ```sql
+     bucket_id = 'papers' AND (string_to_array(name, '/'))[1] = auth.uid()::text
+     ```
+4. Create a **SELECT** policy:
+   - Policy name: "Users can read their own files"
+   - Allowed operation: **SELECT** (check the SELECT checkbox)
+   - Target roles: **authenticated**
+   - Policy definition:
+     ```sql
+     bucket_id = 'papers' AND (string_to_array(name, '/'))[1] = auth.uid()::text
+     ```
+5. Create a **DELETE** policy:
+   - Policy name: "Users can delete their own files"
+   - Allowed operation: **DELETE** (check the DELETE checkbox)
+   - Target roles: **authenticated**
+   - Policy definition:
+     ```sql
+     bucket_id = 'papers' AND (string_to_array(name, '/'))[1] = auth.uid()::text
+     ```
+
+**Note:** 
+- The Supabase UI uses a single "Policy definition" field. Supabase automatically handles USING vs WITH CHECK based on the operation type.
+- The storage path format is `{userId}/{fileId}/{fileName}`, so the policy checks that the first folder matches the authenticated user's ID using `(string_to_array(name, '/'))[1]`.
+- Make sure to replace `'papers'` with your actual bucket name if it's different.
 
 ## 4. Enable Google OAuth Provider
 
@@ -92,14 +119,40 @@ When deploying to Vercel:
 2. Make sure to set them for **Production**, **Preview**, and **Development** environments
 3. The `DIRECT_URL` can be the same as `DATABASE_URL` for small apps, or use the Transaction mode connection string for better pooling
 
-## Connection Pooling (Optional)
+## Connection Pooling (Required for IPv4 Networks)
 
-For better performance in production, you can use Supabase's connection pooler:
+**Important:** As of February 2025, Supabase deprecated Session Mode on port 6543. For IPv4 networks, use **Supavisor Session Mode on port 5432**.
 
-- Use port **6543** instead of **5432** for pooled connections
-- Connection string format: `postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:6543/postgres?pgbouncer=true`
+### Why?
+- Direct connection (port 5432) requires IPv6
+- **Supavisor Session Mode (port 5432)** works with IPv4 ✅
+- Port 6543 now only supports Transaction Mode (not suitable for migrations)
+- **Supavisor is free** and works for migrations
 
-For Prisma 5, you can use the same `DATABASE_URL` for both regular connections and migrations. If you want to use connection pooling, set `DATABASE_URL` to the pooled connection (port 6543) and optionally set `DIRECT_URL` to the direct connection (port 5432) for migrations.
+### How to Get the Correct Connection String:
+
+1. In Supabase Dashboard → **Settings** → **Database**
+2. Click **Connection String** tab
+3. Change **Method** dropdown to **"Supavisor"** (Session Mode)
+4. Copy the connection string (it will use port 5432 with Supavisor)
+5. Update your `.env` file with the connection string from the dashboard
+
+**Note:** 
+- The connection string will look like: `postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres?pgbouncer=true`
+- Replace `[PASSWORD]` with your actual database password
+- If your password contains special characters like `!`, `@`, `#`, URL-encode them:
+  - `!` → `%21`
+  - `@` → `%40`
+  - `#` → `%23`
+- Prisma 5 works fine with Supavisor for migrations
+
+### Example:
+If your password is `PAWLnANKaREMspjE!i7`, the connection string should be:
+```env
+DATABASE_URL=postgresql://postgres:PAWLnANKaREMspjE%21i7@db.aqimmufaauqhbisrgssq.supabase.co:5432/postgres?pgbouncer=true
+```
+
+**Important:** Make sure you select **"Supavisor"** (Session Mode), not "Direct connection" or "Session Pooler" (which is deprecated).
 
 ## Troubleshooting
 
