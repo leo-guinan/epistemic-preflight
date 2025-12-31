@@ -33,22 +33,39 @@ export function PaperUpload({ onSubmit }: PaperUploadProps) {
         
         // Step 1: Initialize upload job (get storage path)
         setProcessingProgress("Initializing upload...");
+        
+        // Get or create session ID for anonymous uploads
+        let sessionId = sessionStorage.getItem("preflight_session_id");
+        if (!sessionId) {
+          sessionId = crypto.randomUUID();
+          sessionStorage.setItem("preflight_session_id", sessionId);
+        }
+        
         const initResponse = await fetch("/api/upload/init", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             fileName: file.name,
             fileSize: file.size,
+            sessionId: sessionId,
           }),
         });
         
         if (!initResponse.ok) {
           const error = await initResponse.json();
+          if (error.requiresAuth) {
+            throw new Error("Please sign in to upload and process files.");
+          }
           throw new Error(error.error || "Failed to initialize upload");
         }
         
-        const { jobId, storagePath, bucket } = await initResponse.json();
-        console.log("[Upload] Upload initialized, jobId:", jobId);
+        const { jobId, storagePath, bucket, requiresAuth, sessionId: returnedSessionId } = await initResponse.json();
+        console.log("[Upload] Upload initialized, jobId:", jobId, "requiresAuth:", requiresAuth);
+        
+        // Store session ID if returned
+        if (returnedSessionId) {
+          sessionStorage.setItem("preflight_session_id", returnedSessionId);
+        }
         
         // Step 2: Upload directly to Supabase Storage (bypasses Vercel)
         setProcessingProgress("Uploading file to storage...");
@@ -60,11 +77,17 @@ export function PaperUpload({ onSubmit }: PaperUploadProps) {
         const completeResponse = await fetch("/api/upload/complete", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ jobId }),
+          body: JSON.stringify({ 
+            jobId,
+            sessionId: sessionStorage.getItem("preflight_session_id"),
+          }),
         });
         
         if (!completeResponse.ok) {
           const error = await completeResponse.json();
+          if (error.requiresAuth) {
+            throw new Error("Please sign in to process your file. Your file has been uploaded and will be processed after you sign in.");
+          }
           throw new Error(error.error || "Failed to complete upload");
         }
         

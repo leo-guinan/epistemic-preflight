@@ -46,10 +46,13 @@ model Paper {
 
 model ProcessingJob {
   id            String   @id @default(cuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String?  // Nullable for anonymous uploads
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId     String?  // Session identifier for anonymous uploads
+  ipAddress     String?  // IP address for rate limiting
   fileName      String
   storageKey    String   // Supabase Storage path
+  bucket        String   // "papers" or "temp"
   status        String   // "uploading" | "uploaded" | "processing" | "completed" | "failed"
   extractedText String?  @db.Text
   error         String?  @db.Text
@@ -57,6 +60,21 @@ model ProcessingJob {
   updatedAt     DateTime @updatedAt
 
   @@index([userId])
+  @@index([sessionId])
   @@index([status])
+  @@index([ipAddress])
+  @@index([createdAt]) // For cleanup queries
+}
+
+model UploadRateLimit {
+  id        String   @id @default(cuid())
+  ipAddress String   @unique
+  count     Int      @default(1)
+  resetAt   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ipAddress])
+  @@index([resetAt]) // For cleanup queries
 }
 

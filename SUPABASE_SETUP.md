@@ -21,7 +21,11 @@ This guide will help you set up Supabase for the Epistemic Preflight application
 4. Copy the connection string (it looks like: `postgresql://postgres:[YOUR-PASSWORD]@db.xxxxx.supabase.co:5432/postgres`)
 5. Replace `[YOUR-PASSWORD]` with the password you created
 
-## 3. Set Up Storage Bucket
+## 3. Set Up Storage Buckets
+
+You need **two buckets**: one for permanent storage and one for temporary anonymous uploads.
+
+### Create `papers` bucket (permanent storage)
 
 1. Go to **Storage** in your Supabase dashboard
 2. Click **New bucket**
@@ -29,20 +33,31 @@ This guide will help you set up Supabase for the Epistemic Preflight application
 4. Make it **Private** (files are user-scoped)
 5. Click **Create bucket**
 
-**Required: Set up storage policies** (needed for direct client uploads):
+### Create `temp` bucket (anonymous uploads)
+
+1. Go to **Storage** in your Supabase dashboard
+2. Click **New bucket**
+3. Name it `temp`
+4. Make it **Private** (we'll use policies to allow anonymous uploads)
+5. Click **Create bucket**
+
+**Required: Set up storage policies**
+
+### `papers` bucket policies (authenticated users only)
+
 1. Go to **Storage** → **Policies** → **papers** bucket
 2. Click **New Policy** → **For full customization**
 3. Create an **INSERT** policy:
    - Policy name: "Users can upload their own files"
-   - Allowed operation: **INSERT** (check the INSERT checkbox)
-   - Target roles: **authenticated** (select from dropdown)
-   - Policy definition (single expression field):
+   - Allowed operation: **INSERT**
+   - Target roles: **authenticated**
+   - Policy definition:
      ```sql
      bucket_id = 'papers' AND (string_to_array(name, '/'))[1] = auth.uid()::text
      ```
 4. Create a **SELECT** policy:
    - Policy name: "Users can read their own files"
-   - Allowed operation: **SELECT** (check the SELECT checkbox)
+   - Allowed operation: **SELECT**
    - Target roles: **authenticated**
    - Policy definition:
      ```sql
@@ -50,17 +65,33 @@ This guide will help you set up Supabase for the Epistemic Preflight application
      ```
 5. Create a **DELETE** policy:
    - Policy name: "Users can delete their own files"
-   - Allowed operation: **DELETE** (check the DELETE checkbox)
+   - Allowed operation: **DELETE**
    - Target roles: **authenticated**
    - Policy definition:
      ```sql
      bucket_id = 'papers' AND (string_to_array(name, '/'))[1] = auth.uid()::text
      ```
 
-**Note:** 
+### `temp` bucket policies (anonymous uploads)
+
+1. Go to **Storage** → **Policies** → **temp** bucket
+2. Click **New Policy** → **For full customization**
+3. Create an **INSERT** policy (allows anonymous uploads):
+   - Policy name: "Anonymous users can upload to temp"
+   - Allowed operation: **INSERT**
+   - Target roles: **anon** (select from dropdown)
+   - Policy definition:
+     ```sql
+     bucket_id = 'temp'
+     ```
+   - **Note:** This allows anyone to upload to the `temp` bucket. Rate limiting (3 uploads per IP per hour) and file validation (PDF only, 50MB max) are handled server-side. Files are automatically moved to the `papers` bucket when the user signs in.
+
+**Important Notes:**
 - The Supabase UI uses a single "Policy definition" field. Supabase automatically handles USING vs WITH CHECK based on the operation type.
-- The storage path format is `{userId}/{fileId}/{fileName}`, so the policy checks that the first folder matches the authenticated user's ID using `(string_to_array(name, '/'))[1]`.
-- Make sure to replace `'papers'` with your actual bucket name if it's different.
+- The `papers` bucket path format is `{userId}/{fileId}/{fileName}`, so the policy checks that the first folder matches the authenticated user's ID.
+- The `temp` bucket path format is `temp/{sessionId}/{fileId}/{fileName}`, so we allow uploads to the `temp` folder.
+- Anonymous uploads are rate-limited server-side (3 uploads per IP per hour).
+- Files in `temp` should be cleaned up after 24 hours (you can set up a cron job for this).
 
 ## 4. Enable Google OAuth Provider
 

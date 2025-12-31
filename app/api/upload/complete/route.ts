@@ -1,25 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db";
+import { randomUUID } from "crypto";
 
 /**
  * Mark upload as complete and trigger processing.
  * Called by the client after successfully uploading directly to Supabase Storage.
+ * For anonymous uploads, requires authentication to process.
  */
 export async function POST(request: NextRequest) {
   try {
     const user = await getUser();
-    if (!user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { jobId } = await request.json();
+    const { jobId, sessionId } = await request.json();
     
     if (!jobId) {
       return NextResponse.json({ error: "Job ID required" }, { status: 400 });
     }
 
-    // Verify job belongs to user
+    // Verify job exists
     const job = await prisma.processingJob.findUnique({
       where: { id: jobId },
     });
@@ -28,8 +26,68 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
 
-    if (job.userId !== user.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    // Check authorization
+    if (job.userId) {
+      // Authenticated job - verify user owns it
+      if (!user || job.userId !== user.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      }
+    } else {
+      // Anonymous job - require authentication to process
+      if (!user) {
+        return NextResponse.json(
+          { 
+            error: "Authentication required to process file",
+            requiresAuth: true,
+            sessionId: job.sessionId 
+          },
+          { status: 401 }
+        );
+      }
+
+      // Verify session ID matches (if provided)
+      if (sessionId && job.sessionId !== sessionId) {
+        return NextResponse.json({ error: "Session mismatch" }, { status: 403 });
+      }
+
+      // Link anonymous job to user account
+      // Find or create user
+      let dbUser = await prisma.user.findUnique({
+        where: { email: user.email },
+      });
+
+      if (!dbUser) {
+        dbUser = await prisma.user.create({
+          data: {
+            id: user.id,
+            email: user.email,
+            name: user.user_metadata?.full_name || user.user_metadata?.name || null,
+            image: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+          },
+        });
+      }
+
+      // Move file from temp to permanent location
+      const newStoragePath = await moveFileToPermanent(job.storageKey, dbUser.id, job.fileName);
+      
+      // Update job with user ID and new path
+      await prisma.processingJob.update({
+        where: { id: jobId },
+        data: {
+          userId: dbUser.id,
+          storageKey: newStoragePath,
+          bucket: process.env.SUPABASE_STORAGE_BUCKET || "papers",
+        },
+      });
+    }
+
+    // Get updated job (in case path changed)
+    const updatedJob = await prisma.processingJob.findUnique({
+      where: { id: jobId },
+    });
+
+    if (!updatedJob) {
+      return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
 
     // Update status to "uploaded" and trigger processing
@@ -39,9 +97,8 @@ export async function POST(request: NextRequest) {
     });
 
     // Trigger processing asynchronously
-    const bucketName = process.env.SUPABASE_STORAGE_BUCKET || "papers";
     setImmediate(() => {
-      processPDFFromStorage(jobId, job.storageKey, bucketName).catch((error) => {
+      processPDFFromStorage(jobId, updatedJob.storageKey, updatedJob.bucket).catch((error) => {
         console.error("[Upload Complete] Processing error:", error);
       });
     });
@@ -57,6 +114,41 @@ export async function POST(request: NextRequest) {
       { error: "Failed to complete upload" },
       { status: 500 }
     );
+  }
+}
+
+/**
+ * Move file from temp bucket to permanent location
+ */
+async function moveFileToPermanent(
+  tempPath: string,
+  userId: string,
+  fileName: string
+): Promise<string> {
+  try {
+    const { downloadFromSupabaseStorage, uploadToSupabaseStorage } = await import("@/lib/supabase-storage");
+    
+    // Download from temp
+    const fileBuffer = await downloadFromSupabaseStorage("temp", tempPath);
+    
+    // Upload to permanent location
+    const permanentPath = `${userId}/${randomUUID()}/${fileName}`;
+    const bucketName = process.env.SUPABASE_STORAGE_BUCKET || "papers";
+    await uploadToSupabaseStorage(bucketName, permanentPath, fileBuffer, "application/pdf");
+    
+    // Delete from temp (optional - can be cleaned up by cron)
+    try {
+      const { deleteFromSupabaseStorage } = await import("@/lib/supabase-storage");
+      await deleteFromSupabaseStorage("temp", tempPath);
+    } catch (error) {
+      console.warn("[Move File] Failed to delete temp file:", error);
+      // Non-critical, continue
+    }
+    
+    return permanentPath;
+  } catch (error) {
+    console.error("[Move File] Error:", error);
+    throw error;
   }
 }
 
