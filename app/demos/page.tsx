@@ -10,24 +10,39 @@ export default function DemosPage() {
       title: "Stochastic Parrots",
       subtitle: "On the Dangers of Stochastic Parrots: Can Language Models Be Too Big?",
       authors: "Bender et al. (2021)",
-      description: "The hero demo. Watch how adversarial claims become boundary questions. This is epistemic conflict resolution.",
+      description: "The hero demo. See how adversarial claims transform into boundary decisions reviewers actually make. This is epistemic conflict resolution.",
       demoType: "conflict",
+      preview: [
+        "Claim extraction & importance weighting",
+        "Conflict localization vs adjacent work",
+        "Boundary-based synthesis recommendations",
+      ],
     },
     {
       id: "attention",
       title: "Attention Is All You Need",
       subtitle: "The Transformer Architecture",
       authors: "Vaswani et al. (2017)",
-      description: "Reverse-engineer a field's origin myth. See the foundational claims that birthed an entire research paradigm.",
+      description: "Reverse-engineer a field's origin myth — and see which assumptions still silently govern the literature.",
       demoType: "foundational",
+      preview: [
+        "Foundational claim graph",
+        "Dependency structure visualization",
+        "What later papers implicitly inherit",
+      ],
     },
     {
       id: "alignment",
       title: "Constitutional AI",
       subtitle: "Harmlessness from AI Feedback",
       authors: "Anthropic (2022)",
-      description: "Where responsibility gets blurry. See how claims shift from 'models are dangerous' to 'governance is solved'.",
+      description: "Where responsibility gets blurry — and why governance papers quietly reshape epistemic accountability.",
       demoType: "governance",
+      preview: [
+        "Responsibility localization shift",
+        "Governance vs agent-level framing",
+        "Reviewer risk signals",
+      ],
     },
   ];
 
@@ -55,6 +70,16 @@ export default function DemosPage() {
               <p className={styles.demoAuthors}>{demo.authors}</p>
             </div>
             <p className={styles.demoDescription}>{demo.description}</p>
+            {demo.preview && (
+              <div className={styles.previewSection}>
+                <p className={styles.previewLabel}>What you'll see inside:</p>
+                <ul className={styles.previewList}>
+                  {demo.preview.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div className={styles.demoType}>
               <span className={styles.typeBadge}>{demo.demoType}</span>
             </div>

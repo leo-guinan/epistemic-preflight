@@ -87,6 +87,47 @@
   margin: 0 0 1.5rem 0;
 }
 
+.previewSection {
+  margin: 0 0 1.5rem 0;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.previewLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 0.75rem 0;
+}
+
+.previewList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.previewList li {
+  font-size: 0.875rem;
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0 0 0.5rem 0;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.previewList li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #9ca3af;
+}
+
+.previewList li:last-child {
+  margin-bottom: 0;
+}
+
 .demoType {
   display: flex;
   align-items: center;
