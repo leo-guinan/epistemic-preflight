@@ -49,21 +49,33 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      if (file) {
-        console.log("[Synthesis] Processing file:", file.name);
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
+      if (file && file instanceof File) {
+        try {
+          console.log("[Synthesis] Processing file:", file.name);
+          const arrayBuffer = await file.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
 
-        if (file.type === "application/pdf" || file.name.endsWith(".pdf")) {
-          const processed = await processPDF(buffer);
-          paperContent = processed.text;
-        } else {
-          paperContent = buffer.toString("utf-8");
+          if (file.type === "application/pdf" || file.name.endsWith(".pdf")) {
+            const processed = await processPDF(buffer);
+            paperContent = processed.text;
+          } else {
+            paperContent = buffer.toString("utf-8");
+          }
+        } catch (error) {
+          console.error("[Synthesis] Error processing file:", error);
+          if (textContent) {
+            paperContent = textContent;
+          } else {
+            throw new Error("Failed to process file and no text content provided");
+          }
         }
       } else if (textContent) {
         paperContent = textContent;
       } else {
-        throw new Error("No file or text content provided");
+        return NextResponse.json(
+          { error: "No file or text content provided" },
+          { status: 400 }
+        );
       }
     } else {
       console.log("[Synthesis] Processing JSON...");
