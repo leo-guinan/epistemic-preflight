@@ -52,6 +52,13 @@ export async function POST(request: NextRequest) {
 
       // Link anonymous job to user account
       // Find or create user
+      if (!user.email) {
+        return NextResponse.json(
+          { error: "User email is required" },
+          { status: 400 }
+        );
+      }
+
       let dbUser = await prisma.user.findUnique({
         where: { email: user.email },
       });
