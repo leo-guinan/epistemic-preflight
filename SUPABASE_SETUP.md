@@ -86,6 +86,10 @@ You need **two buckets**: one for permanent storage and one for temporary anonym
      ```
    - **Note:** This allows anyone to upload to the `temp` bucket. Rate limiting (3 uploads per IP per hour) and file validation (PDF only, 50MB max) are handled server-side. Files are automatically moved to the `papers` bucket when the user signs in.
 
+4. **IMPORTANT:** The server-side code needs to read from the `temp` bucket to process files. Since the server uses the service role key (which bypasses RLS), you don't need a SELECT policy. However, if downloads are failing, verify that:
+   - Your `.env` file has `SUPABASE_SERVICE_ROLE_KEY` set (not just `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
+   - The service role key is correctly configured in `lib/supabase/server.ts`
+
 **Important Notes:**
 - The Supabase UI uses a single "Policy definition" field. Supabase automatically handles USING vs WITH CHECK based on the operation type.
 - The `papers` bucket path format is `{userId}/{fileId}/{fileName}`, so the policy checks that the first folder matches the authenticated user's ID.
@@ -121,6 +125,10 @@ DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/
 # Required: For Supabase Auth and client features
 NEXT_PUBLIC_SUPABASE_URL=https://[PROJECT_REF].supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+
+# Required: For server-side operations that bypass RLS (downloading from temp bucket, etc.)
+# Get this from: Settings → API → service_role key (secret)
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
 
 # Optional: Supabase Storage bucket name (defaults to "papers")
 SUPABASE_STORAGE_BUCKET=papers

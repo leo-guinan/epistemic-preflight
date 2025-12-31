@@ -1,5 +1,5 @@
 // Supabase Storage utilities for file uploads
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 
 export async function uploadToSupabaseStorage(
   bucket: string,
@@ -27,7 +27,8 @@ export async function downloadFromSupabaseStorage(
   bucket: string,
   path: string
 ): Promise<Buffer> {
-  const supabase = await createClient();
+  // Use service role client to bypass RLS (needed for temp bucket downloads)
+  const supabase = createServiceRoleClient();
   
   const { data, error } = await supabase.storage
     .from(bucket)
@@ -47,7 +48,8 @@ export async function downloadFromSupabaseStorage(
 }
 
 export async function deleteFromSupabaseStorage(bucket: string, path: string) {
-  const supabase = await createClient();
+  // Use service role client to bypass RLS (needed for temp bucket deletions)
+  const supabase = createServiceRoleClient();
   
   const { error } = await supabase.storage
     .from(bucket)
