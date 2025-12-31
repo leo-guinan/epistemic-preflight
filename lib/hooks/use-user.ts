@@ -8,12 +8,27 @@ export function useUser() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  const supabase = useMemo(() => createClient(), []);
+  const supabase = useMemo(() => {
+    try {
+      return createClient();
+    } catch (error) {
+      console.error("Failed to create Supabase client:", error);
+      return null;
+    }
+  }, []);
 
   useEffect(() => {
+    if (!supabase) {
+      setIsLoading(false);
+      return;
+    }
+
     // Get initial session
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
+      setIsLoading(false);
+    }).catch((error) => {
+      console.error("Error getting user:", error);
       setIsLoading(false);
     });
 
