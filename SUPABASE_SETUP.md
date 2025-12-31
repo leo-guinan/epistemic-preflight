@@ -104,7 +104,29 @@ You need **two buckets**: one for permanent storage and one for temporary anonym
 3. Add your Google OAuth credentials:
    - **Client ID**: From Google Cloud Console
    - **Client Secret**: From Google Cloud Console
-4. Add authorized redirect URL: `https://[YOUR_DOMAIN]/api/auth/callback`
+
+### Configure Redirect URLs
+
+**IMPORTANT:** You must configure redirect URLs in both Supabase and Google Cloud Console.
+
+#### In Supabase Dashboard:
+
+1. Go to **Authentication** → **URL Configuration**
+2. Under **Redirect URLs**, add:
+   - Production: `https://www.epistemicpreflight.com/api/auth/callback` (or your domain)
+   - Production (no www): `https://epistemicpreflight.com/api/auth/callback` (if you use both)
+   - Local development: `http://localhost:3001/api/auth/callback` (or your local port)
+
+#### In Google Cloud Console:
+
+1. Go to **APIs & Services** → **Credentials**
+2. Find your OAuth 2.0 Client ID and click **Edit**
+3. Under **Authorized redirect URIs**, add the same URLs:
+   - `https://www.epistemicpreflight.com/api/auth/callback`
+   - `https://epistemicpreflight.com/api/auth/callback` (if needed)
+   - `http://localhost:3001/api/auth/callback`
+
+**Note:** The redirect URL must match exactly (including `http://` vs `https://` and `www` vs non-`www`). If you get redirected to `localhost` in production, check that your production domain is whitelisted in both places.
 
 ## 5. Set Environment Variables
 
