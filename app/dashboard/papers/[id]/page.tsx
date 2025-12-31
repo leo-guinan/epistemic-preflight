@@ -98,9 +98,12 @@ export default function PaperDetailPage() {
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Core Claims</h2>
           <div className={styles.claimsList}>
-            {paper.coreClaims.map((claim) => (
+            {paper.coreClaims.map((claim, index) => (
               <div key={claim.id} className={styles.claim}>
                 <div className={styles.claimHeader}>
+                  <span className={styles.claimLabel}>
+                    Claim {String.fromCharCode(65 + index)}
+                  </span>
                   <span className={styles.claimType}>{claim.type}</span>
                   <span className={styles.claimImportance}>
                     Importance: {claim.importance}/10

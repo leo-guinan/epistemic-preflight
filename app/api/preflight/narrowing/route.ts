@@ -117,11 +117,12 @@ Identify 1-2 claims that are:
 
 Return a JSON object with:
 - narrowableClaims: array of objects, each with:
-  - claimId: the claim id
-  - claimLabel: "Claim A", "Claim B", etc.
+  - claimLabel: "Claim A", "Claim B", etc. (use the letter from the list above - A, B, C, etc.)
   - claimText: the current claim text
   - riskLevel: "high" | "medium"
   - reason: why this claim would benefit from narrowing
+
+IMPORTANT: Use the letter label (A, B, C, etc.) in claimLabel. The system will map it to the correct claim ID automatically.
 
 Format as valid JSON only.`;
 
@@ -131,8 +132,7 @@ Format as valid JSON only.`;
         schema: z.object({
           narrowableClaims: z.array(
             z.object({
-              claimId: z.string(),
-              claimLabel: z.string(),
+              claimLabel: z.string(), // e.g., "Claim A", "Claim B"
               claimText: z.string(),
               riskLevel: z.enum(["high", "medium"]),
               reason: z.string(),
@@ -145,12 +145,44 @@ Format as valid JSON only.`;
     const narrowingData = (narrowingResult as any).object || narrowingResult;
     console.log("[Narrowing] Narrowable claims identified:", narrowingData.narrowableClaims?.length || 0);
 
+    // Map letter labels back to actual claim IDs
+    // The LLM might return "A", "B" etc. as claimId, so we need to map them to actual claim IDs
+    const mappedNarrowableClaims = (narrowingData.narrowableClaims || []).map((nc: any) => {
+      // Extract the letter from the claimLabel (e.g., "Claim A" -> "A")
+      const labelMatch = nc.claimLabel?.match(/Claim ([A-Z])/i);
+      const letterIndex = labelMatch ? labelMatch[1].charCodeAt(0) - 65 : -1;
+      
+      // Find the actual claim by index
+      if (letterIndex >= 0 && letterIndex < claims.length) {
+        return {
+          ...nc,
+          claimId: claims[letterIndex].id, // Use the actual claim ID
+          claimLabel: `Claim ${String.fromCharCode(65 + letterIndex)}`, // Ensure consistent label format
+        };
+      }
+      
+      // Fallback: try to match by claimId if it's already correct
+      const matchedClaim = claims.find((c) => c.id === nc.claimId);
+      if (matchedClaim) {
+        const claimIndex = claims.indexOf(matchedClaim);
+        return {
+          ...nc,
+          claimId: matchedClaim.id,
+          claimLabel: `Claim ${String.fromCharCode(65 + claimIndex)}`,
+        };
+      }
+      
+      // If no match, return as-is (shouldn't happen, but handle gracefully)
+      console.warn(`[Narrowing] Could not map claim label ${nc.claimLabel} to actual claim ID`);
+      return nc;
+    });
+
     const totalTime = Date.now() - startTime;
     console.log("[Narrowing] ===== Complete =====");
     console.log("[Narrowing] Total time:", totalTime, "ms");
 
     return NextResponse.json({
-      narrowableClaims: narrowingData.narrowableClaims || [],
+      narrowableClaims: mappedNarrowableClaims,
     });
   } catch (error) {
     console.error("[Narrowing] Error:", error);
