@@ -106,7 +106,12 @@ export default function PreflightPage() {
       if (savedState) {
         console.log("[Preflight] Restoring saved state:", savedState.state);
         setState(savedState.state as PreflightState);
-        setData(savedState.data);
+        // Type-safe restoration: cast intent to PaperIntent if it's a valid value
+        const restoredData: PreflightData = {
+          ...savedState.data,
+          intent: savedState.data.intent as PaperIntent | undefined,
+        };
+        setData(restoredData);
         setHasRestoredState(true);
       } else {
         setHasRestoredState(true);
