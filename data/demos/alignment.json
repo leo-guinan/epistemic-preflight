@@ -1,0 +1,128 @@
+{
+  "id": "alignment",
+  "title": "Constitutional AI: Harmlessness from AI Feedback",
+  "authors": "Anthropic",
+  "year": 2022,
+  "venue": "arXiv",
+  "description": "Papers on RLHF and Constitutional AI represent where responsibility gets blurry in AI governance. See how claims shift from 'models are dangerous' to 'governance is solved' and where accountability gets implicitly transferred.",
+  "abstract": "As AI systems become more capable, we would like to enlist their help to supervise other AIs. We experiment with methods for training a harmless AI assistant through self- improvement, without any human labels identifying harmful outputs. The only human oversight is provided through a list of rules or principles, and so we refer to the method as ‘Constitutional AI’. The process involves both a supervised learning and a reinforcement learning phase. In the supervised phase we sample from an initial model, then generate self-critiques and revisions, and then finetune the original model on revised responses. In the RL phase, we sample from the finetuned model, use a model to evaluate which of the two samples is better, and then train a preference model from this dataset of AI prefer- ences. We then train with RL using the preference model as the reward signal, i.e. we use ‘RL from AI Feedback’ (RLAIF). As a result we are able to train a harmless but non- evasive AI assistant that engages with harmful queries by explaining its objections to them. Both the SL and RL methods can leverage chain-of-thought style reasoning to improve the human-judged performance and transparency of AI decision making. These methods make it possible to control AI behavior more precisely and with far fewer human labels. ∗ Correspondence to: {yuntao,jared}@anthropic.com Author contributions are detailed in 7. arXiv:2212.08073v1 [cs.CL] 15 Dec 2022 Generate Responses to “Red Teaming” Prompts Eliciting Har",
+  "demoType": "governance",
+  "keyInsights": [
+    "Shows how responsibility gets implicitly transferred to reward models and annotators",
+    "Demonstrates claim drift from 'models are dangerous' to 'governance is solved'",
+    "Illustrates where accountability becomes ambiguous: model? trainer? deployer? user?"
+  ],
+  "featuredMoment": {
+    "title": "Responsibility Localization Shift",
+    "description": "Watch how claims shift from agent-level ('models are dangerous') to boundary-level ('governance boundaries must be enforced'). This reframing preserves all concerns while clarifying where accountability actually lives.",
+    "type": "boundary"
+  },
+  "coreClaims": [
+    {
+      "id": "claim1",
+      "text": "Constitutional AI can train AI systems to be harmless without human feedback labels by using a set of principles as a 'constitution'.",
+      "type": "foundational",
+      "importance": 10
+    },
+    {
+      "id": "claim2",
+      "text": "The method involves a two-stage process: a supervised learning phase for initial behavior control and a reinforcement learning phase for performance improvement.",
+      "type": "foundational",
+      "importance": 9
+    },
+    {
+      "id": "claim3",
+      "text": "AI systems trained with Constitutional AI are preferred by crowdworkers over those trained with traditional human feedback methods for harmlessness.",
+      "type": "downstream",
+      "importance": 8
+    },
+    {
+      "id": "claim4",
+      "text": "Chain-of-thought reasoning enhances AI's ability to evaluate and improve its own responses, leading to better harmlessness and transparency.",
+      "type": "supporting",
+      "importance": 7
+    },
+    {
+      "id": "claim5",
+      "text": "The approach reduces the need for human feedback, potentially scaling AI supervision but also risks automating and obscuring decision-making processes.",
+      "type": "supporting",
+      "importance": 6
+    }
+  ],
+  "riskSignal": "The claim that AI can effectively self-supervise for harmlessness without human feedback may sit at a disagreement boundary regarding AI ethics and safety.",
+  "fullAnalysis": {
+    "overlap": {
+      "summary": "The paper builds on existing work in reinforcement learning from human feedback (RLHF) and chain-of-thought reasoning, extending these concepts to reduce reliance on human labels.",
+      "details": [
+        "The paper builds on existing work in reinforcement learning from human feedback (RLHF) and chain-of-thought reasoning, extending these concepts to reduce reliance on human labels."
+      ]
+    },
+    "conflict": {
+      "summary": "The approach challenges traditional RLHF methods by suggesting that AI can self-supervise effectively without human feedback, which may conflict with views on the necessity of human oversight in AI training.",
+      "details": [
+        "The approach challenges traditional RLHF methods by suggesting that AI can self-supervise effectively without human feedback, which may conflict with views on the necessity of human oversight in AI training."
+      ]
+    },
+    "risks": [
+      "The reliance on AI-generated feedback might lead to unforeseen biases if the principles are not comprehensive or well-defined.",
+      "The reduction in human oversight could result in less transparency and accountability in AI decision-making processes.",
+      "The method's effectiveness may be overestimated if crowdworker preferences do not accurately reflect real-world harmlessness."
+    ]
+  },
+  "synthesisPreview": {
+    "claimShifts": [
+      {
+        "claimId": "claim1",
+        "claimLabel": "Claim A",
+        "before": "Constitutional AI can train AI systems to be harmless without human feedback labels by using a set of principles as a 'constitution'.",
+        "after": "Constitutional AI aims to train AI systems to be less harmful by using a set of principles as a 'constitution', potentially reducing reliance on human feedback labels."
+      },
+      {
+        "claimId": "claim2",
+        "claimLabel": "Claim B",
+        "before": "The method involves a two-stage process: a supervised learning phase for initial behavior control and a reinforcement learning phase for performance improvement.",
+        "after": "The method involves a two-stage process: a supervised learning phase for initial behavior guidance and a reinforcement learning phase for iterative performance enhancement."
+      },
+      {
+        "claimId": "claim3",
+        "claimLabel": "Claim C",
+        "before": "AI systems trained with Constitutional AI are preferred by crowdworkers over those trained with traditional human feedback methods for harmlessness.",
+        "after": "AI systems trained with Constitutional AI tend to be preferred by crowdworkers over those trained with traditional human feedback methods for perceived harmlessness."
+      },
+      {
+        "claimId": "claim4",
+        "claimLabel": "Claim D",
+        "before": "Chain-of-thought reasoning enhances AI's ability to evaluate and improve its own responses, leading to better harmlessness and transparency.",
+        "after": "Chain-of-thought reasoning may enhance AI's ability to evaluate and improve its own responses, potentially leading to improved harmlessness and transparency."
+      },
+      {
+        "claimId": "claim5",
+        "claimLabel": "Claim E",
+        "before": "The approach reduces the need for human feedback, potentially scaling AI supervision but also risks automating and obscuring decision-making processes.",
+        "after": "The approach may reduce the need for human feedback, potentially scaling AI supervision, but it also carries risks of automating and obscuring decision-making processes."
+      }
+    ],
+    "originalAbstract": "As AI systems become more capable, we would like to enlist their help to supervise other AIs. We experiment with methods for training a harmless AI assistant through self- improvement, without any human labels identifying harmful outputs. The only human oversight is provided through a list of rules or principles, and so we refer to the method as ‘Constitutional AI’. The process involves both a supervised learning and a reinforcement learning phase. In the supervised phase we sample from an initial model, then generate self-critiques and revisions, and then finetune the original model on revised responses. In the RL phase, we sample from the finetuned model, use a model to evaluate which of the two samples is better, and then train a preference model from this dataset of AI prefer- ences. We then train with RL using the preference model as the reward signal, i.e. we use ‘RL from AI Feedback’ (RLAIF). As a result we are able to train a harmless but non- evasive AI assistant that engages with harmful queries by explaining its objections to them. Both the SL and RL methods can leverage chain-of-thought style reasoning to improve the human-judged performance and transparency of AI decision making. These methods make it possible to control AI behavior more precisely and with far fewer human labels. ∗ Correspondence to: {yuntao,jared}@anthropic.com Author contributions are detailed in 7. arXiv:2212.08073v1 [cs.CL] 15 Dec 2022 Generate Responses to “Red Teaming” Prompts Eliciting Har",
+    "synthesisAbstract": "As AI systems become more capable, we seek to explore their potential in supervising other AIs. This study investigates methods for training a less harmful AI assistant through self-improvement, minimizing reliance on human labels for identifying harmful outputs. Human oversight is limited to a set of guiding principles, hence the term ‘Constitutional AI’. The process includes a supervised learning phase for initial behavior guidance and a reinforcement learning phase for iterative performance enhancement. In the supervised phase, we sample from an initial model, generate self-critiques and revisions, and finetune the original model on revised responses. In the RL phase, we sample from the finetuned model, use a model to evaluate which of the two samples is better, and then train a preference model from this dataset of AI preferences. We then train with RL using the preference model as the reward signal, i.e., ‘RL from AI Feedback’ (RLAIF). This approach aims to develop a less harmful but non-evasive AI assistant that engages with harmful queries by explaining its objections. Both the SL and RL methods can leverage chain-of-thought style reasoning to potentially improve the human-judged performance and transparency of AI decision-making. These methods may allow for more precise control of AI behavior with fewer human labels.",
+    "abstractHighlights": {
+      "added": [],
+      "softened": [
+        "Claim A",
+        "Claim B",
+        "Claim C",
+        "Claim D",
+        "Claim E"
+      ],
+      "scopeConditions": [
+        "Claim A",
+        "Claim D",
+        "Claim E"
+      ]
+    },
+    "summary": {
+      "rescoped": 3,
+      "reframed": 5,
+      "weakened": 0
+    }
+  }
+}

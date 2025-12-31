@@ -1,0 +1,116 @@
+{
+  "id": "stochastic-parrots",
+  "title": "On the Dangers of Stochastic Parrots: Can Language Models Be Too Big?",
+  "authors": "Emily M. Bender, Timnit Gebru, Angelina McMillan-Major, Shmargaret Shmitchell",
+  "year": 2021,
+  "venue": "FAccT",
+  "description": "This paper triggered one of the most significant epistemic ruptures in AI research, mixing technical claims, ethical concerns, and political stakes. It's perfect for demonstrating adversarial reasoning, synthesis reframing, and boundary localization.",
+  "abstract": "In this position paper, we focus on the specific harms that may arise from generative language models, paying particular attention to social and environmental harms. We argue that the harms we identify are direct consequences of the scale and design of these systems. We further argue that these harms are not merely speculative future risks, but present-day, concrete harms that are already being perpetuated and amplified by these systems. We conclude by calling for more careful consideration of whether and how these systems should be developed and deployed.",
+  "demoType": "conflict",
+  "keyInsights": [
+    "Shows how technical, ethical, and political claims are interwoven",
+    "Demonstrates adversarial readings from different epistemic positions",
+    "Perfect candidate for synthesis reframing that preserves core concerns",
+    "Illustrates responsibility localization challenges"
+  ],
+  "featuredMoment": {
+    "title": "Synthesis Framing: From Opposition to Boundary",
+    "description": "Watch how the disagreement shifts from 'models are dangerous' vs 'models are safe' to 'where should responsibility be enforced?' This reframing preserves all concerns while enabling productive dialogue.",
+    "type": "synthesis"
+  },
+  "coreClaims": [
+    {
+      "id": "claim-1",
+      "text": "Large language models encode biases present in training data and perpetuate them in generated text",
+      "type": "foundational",
+      "importance": 10
+    },
+    {
+      "id": "claim-2",
+      "text": "The environmental costs of training and deploying large language models are substantial and often unaccounted for",
+      "type": "foundational",
+      "importance": 9
+    },
+    {
+      "id": "claim-3",
+      "text": "Language models create an illusion of meaning and understanding without actually possessing either",
+      "type": "foundational",
+      "importance": 9
+    },
+    {
+      "id": "claim-4",
+      "text": "The scale and design choices of these systems directly cause social and environmental harms",
+      "type": "downstream",
+      "importance": 8
+    },
+    {
+      "id": "claim-5",
+      "text": "Current development practices misallocate research resources toward scaling rather than addressing fundamental limitations",
+      "type": "downstream",
+      "importance": 7
+    }
+  ],
+  "riskSignal": "This paper sits at a known disagreement boundary between technical capability assessment and normative evaluation of research practices. It explicitly challenges foundational assumptions of the scaling paradigm.",
+  "fullAnalysis": {
+    "overlap": {
+      "summary": "Shared concerns about model limitations and training data quality",
+      "details": [
+        "Both sides acknowledge training data contains biases",
+        "General agreement that current models have limitations",
+        "Shared recognition of the need for evaluation metrics"
+      ]
+    },
+    "conflict": {
+      "summary": "Fundamental disagreement about whether scale is the solution or the problem",
+      "details": [
+        "Parrots argues scale amplifies harms; scaling advocates argue scale enables safety",
+        "Disagreement about whether 'illusion of meaning' is a feature or bug",
+        "Contested framing: technical problem vs. governance failure"
+      ]
+    },
+    "risks": [
+      "Reviewers may perceive the paper as overly political rather than technically rigorous, questioning the legitimacy of mixing ethical and technical claims",
+      "Scaling advocates may dismiss the paper as failing to acknowledge recent safety improvements, creating an adversarial review dynamic",
+      "The explicit challenge to industry research practices may trigger defensive responses that focus on tone rather than substance"
+    ]
+  },
+  "synthesisPreview": {
+    "claimShifts": [
+      {
+        "claimId": "claim-1",
+        "claimLabel": "Claim A",
+        "before": "Large language models encode biases present in training data and perpetuate them in generated text",
+        "after": "Large language models, under current training regimes and data collection practices, encode biases present in training data and can perpetuate them in generated text, making explicit data curation and bias mitigation a boundary condition for responsible deployment"
+      },
+      {
+        "claimId": "claim-4",
+        "claimLabel": "Claim D",
+        "before": "The scale and design choices of these systems directly cause social and environmental harms",
+        "after": "The scale and design choices of these systems, when deployed without appropriate governance boundaries, can cause social and environmental harms that must be addressed through policy and technical safeguards"
+      }
+    ],
+    "originalAbstract": "In this position paper, we focus on the specific harms that may arise from generative language models, paying particular attention to social and environmental harms. We argue that the harms we identify are direct consequences of the scale and design of these systems. We further argue that these harms are not merely speculative future risks, but present-day, concrete harms that are already being perpetuated and amplified by these systems. We conclude by calling for more careful consideration of whether and how these systems should be developed and deployed.",
+    "synthesisAbstract": "In this position paper, we focus on the specific harms that may arise from generative language models, paying particular attention to social and environmental harms. We argue that the harms we identify are direct consequences of the scale and design of these systems, and that their manifestation depends critically on deployment contexts and governance boundaries. We further argue that these harms are not merely speculative future risks, but present-day, concrete harms that can be addressed through explicit responsibility localization in system design and policy frameworks. We conclude by calling for more careful consideration of where responsibility should be enforced—at the data curation boundary, the deployment boundary, or the governance boundary—and how these systems should be developed and deployed accordingly.",
+    "abstractHighlights": {
+      "added": [
+        "\"their manifestation depends critically on deployment contexts and governance boundaries\"",
+        "\"explicit responsibility localization in system design\"",
+        "\"where responsibility should be enforced—at the data curation boundary, the deployment boundary, or the governance boundary\""
+      ],
+      "softened": [
+        "\"direct consequences\" → \"can be addressed through\"",
+        "\"already being perpetuated\" → \"can be addressed\""
+      ],
+      "scopeConditions": [
+        "\"under current training regimes and data collection practices\"",
+        "\"when deployed without appropriate governance boundaries\""
+      ]
+    },
+    "summary": {
+      "rescoped": 2,
+      "reframed": 1,
+      "weakened": 0
+    }
+  }
+}
+

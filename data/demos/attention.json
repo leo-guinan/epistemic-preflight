@@ -1,0 +1,130 @@
+{
+  "id": "attention",
+  "title": "Attention Is All You Need",
+  "authors": "Vaswani et al.",
+  "year": 2017,
+  "venue": "NeurIPS",
+  "description": "The paper that birthed the transformer architecture and modern NLP. This demo shows how to reverse-engineer a field's origin myth by identifying the foundational claims that created an entire research paradigm.",
+  "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English- to-German translation task, improving over the existing best results, including ensembles, by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data. ∗ Equal contribution. Listing order is random. Jakob proposed replacing RNNs with self-attention and started the effort to evaluate this idea. Ashish, with Illia, designed and implemented the first Transformer models and has been crucially involved in every aspect of this work. Noam proposed scaled dot-product attention, multi-head attention and the paramet",
+  "demoType": "foundational",
+  "keyInsights": [
+    "Shows how a few foundational claims can birth an entire research paradigm",
+    "Demonstrates dependency graph: which claims collapse if attention ≠ sufficient?",
+    "Reveals silent assumptions about data scale, compute, and task distribution"
+  ],
+  "featuredMoment": {
+    "title": "The Origin Myth Decomposed",
+    "description": "See how this paper only really has 2-3 load-bearing claims. Everything else is downstream. This demo shows that we understand foundations better than citation counts do.",
+    "type": "claim-extraction"
+  },
+  "coreClaims": [
+    {
+      "id": "claim1",
+      "text": "The Transformer model, based solely on attention mechanisms, outperforms existing models in machine translation tasks without using recurrence or convolutions.",
+      "type": "foundational",
+      "importance": 10
+    },
+    {
+      "id": "claim2",
+      "text": "The Transformer achieves state-of-the-art BLEU scores on the WMT 2014 English-to-German and English-to-French translation tasks, with significantly reduced training time and computational cost.",
+      "type": "downstream",
+      "importance": 9
+    },
+    {
+      "id": "claim3",
+      "text": "Self-attention allows for more parallelization and shorter path lengths between dependencies, improving the learning of long-range dependencies compared to recurrent and convolutional models.",
+      "type": "supporting",
+      "importance": 8
+    },
+    {
+      "id": "claim4",
+      "text": "The Transformer generalizes well to other tasks, such as English constituency parsing, demonstrating its versatility beyond translation tasks.",
+      "type": "downstream",
+      "importance": 7
+    },
+    {
+      "id": "claim5",
+      "text": "Multi-head attention enables the model to attend to information from different representation subspaces, enhancing its ability to capture complex dependencies.",
+      "type": "supporting",
+      "importance": 6
+    }
+  ],
+  "riskSignal": "The claim that self-attention alone can replace recurrence and convolution in sequence transduction models may be challenged due to existing reliance on these architectures in the literature.",
+  "fullAnalysis": {
+    "overlap": {
+      "summary": "The paper builds on existing work in attention mechanisms and sequence transduction models, particularly those using encoder-decoder architectures with attention components.",
+      "details": [
+        "The paper builds on existing work in attention mechanisms and sequence transduction models, particularly those using encoder-decoder architectures with attention components."
+      ]
+    },
+    "conflict": {
+      "summary": "The paper challenges the necessity of recurrent and convolutional layers in sequence transduction models, proposing that attention mechanisms alone can achieve superior performance.",
+      "details": [
+        "The paper challenges the necessity of recurrent and convolutional layers in sequence transduction models, proposing that attention mechanisms alone can achieve superior performance."
+      ]
+    },
+    "risks": [
+      "The claim that self-attention alone is sufficient might be challenged by proponents of hybrid models combining attention with recurrence or convolution.",
+      "The generalization of the Transformer to tasks beyond translation could be questioned if not sufficiently demonstrated across diverse domains.",
+      "The computational efficiency claims may be scrutinized if not benchmarked against a wide range of existing models and hardware configurations."
+    ]
+  },
+  "synthesisPreview": {
+    "claimShifts": [
+      {
+        "claimId": "claim1",
+        "claimLabel": "Claim A",
+        "before": "The Transformer model, based solely on attention mechanisms, outperforms existing models in machine translation tasks without using recurrence or convolutions.",
+        "after": "The Transformer model, primarily utilizing attention mechanisms, demonstrates superior performance in specific machine translation tasks compared to some existing models that use recurrence or convolutions."
+      },
+      {
+        "claimId": "claim2",
+        "claimLabel": "Claim B",
+        "before": "The Transformer achieves state-of-the-art BLEU scores on the WMT 2014 English-to-German and English-to-French translation tasks, with significantly reduced training time and computational cost.",
+        "after": "The Transformer achieves competitive BLEU scores on the WMT 2014 English-to-German and English-to-French translation tasks, with reduced training time and computational cost under certain conditions."
+      },
+      {
+        "claimId": "claim3",
+        "claimLabel": "Claim C",
+        "before": "Self-attention allows for more parallelization and shorter path lengths between dependencies, improving the learning of long-range dependencies compared to recurrent and convolutional models.",
+        "after": "Self-attention facilitates increased parallelization and potentially shorter path lengths between dependencies, which may enhance the learning of long-range dependencies in comparison to some recurrent and convolutional models."
+      },
+      {
+        "claimId": "claim4",
+        "claimLabel": "Claim D",
+        "before": "The Transformer generalizes well to other tasks, such as English constituency parsing, demonstrating its versatility beyond translation tasks.",
+        "after": "The Transformer shows potential for generalization to other tasks, such as English constituency parsing, indicating its versatility beyond translation tasks under certain conditions."
+      },
+      {
+        "claimId": "claim5",
+        "claimLabel": "Claim E",
+        "before": "Multi-head attention enables the model to attend to information from different representation subspaces, enhancing its ability to capture complex dependencies.",
+        "after": "Multi-head attention allows the model to attend to information from various representation subspaces, which may enhance its ability to capture complex dependencies."
+      }
+    ],
+    "originalAbstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English- to-German translation task, improving over the existing best results, including ensembles, by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data. ∗ Equal contribution. Listing order is random. Jakob proposed replacing RNNs with self-attention and started the effort to evaluate this idea. Ashish, with Illia, designed and implemented the first Transformer models and has been crucially involved in every aspect of this work. Noam proposed scaled dot-product attention, multi-head attention and the paramet",
+    "synthesisAbstract": "Current sequence transduction models often rely on complex recurrent or convolutional neural networks, incorporating an encoder and a decoder linked by an attention mechanism. We introduce the Transformer, a novel architecture that primarily uses attention mechanisms, eliminating the need for recurrence and convolutions. In specific machine translation tasks, our experiments suggest that these models can achieve competitive quality, offering increased parallelization and reduced training time. The Transformer achieves a BLEU score of 28.4 on the WMT 2014 English-to-German task and 41.8 on the English-to-French task, with training conducted over 3.5 days on eight GPUs, representing a fraction of the training costs of some leading models. Additionally, the Transformer shows potential for generalization to other tasks, such as English constituency parsing, under various data conditions.",
+    "abstractHighlights": {
+      "added": [],
+      "softened": [
+        "outperforms existing models",
+        "achieves state-of-the-art BLEU scores",
+        "allows for more parallelization",
+        "generalizes well to other tasks",
+        "enables the model to attend"
+      ],
+      "scopeConditions": [
+        "compared to some existing models",
+        "under certain conditions",
+        "in comparison to some recurrent and convolutional models",
+        "under certain conditions",
+        "which may enhance"
+      ]
+    },
+    "summary": {
+      "rescoped": 3,
+      "reframed": 5,
+      "weakened": 0
+    }
+  }
+}

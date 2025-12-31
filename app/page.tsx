@@ -22,6 +22,9 @@ export default function LandingPage() {
           <Link href="/preflight" className={styles.ctaPrimary}>
             Upload a Paper
           </Link>
+          <Link href="/demos" className={styles.ctaSecondary}>
+            View Demos
+          </Link>
           <Link href="#learn-more" className={styles.ctaSecondary}>
             Learn More
           </Link>
