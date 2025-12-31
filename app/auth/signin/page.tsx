@@ -41,10 +41,14 @@ function SignInForm() {
       setError(null);
       const callbackUrl = searchParams?.get("callbackUrl") || "/dashboard";
       
+      // Construct redirect URL - ensure no extra whitespace
+      const redirectUrl = `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(callbackUrl)}`;
+      console.log("[Sign In] Redirect URL:", redirectUrl);
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(callbackUrl)}`,
+          redirectTo: redirectUrl.trim(), // Ensure no leading/trailing whitespace
         },
       });
 

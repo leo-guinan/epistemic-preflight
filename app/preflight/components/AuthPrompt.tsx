@@ -31,10 +31,14 @@ export function AuthPrompt({ onSignInComplete, currentState, currentData }: Auth
       // Set flag in sessionStorage to indicate we're going through OAuth
       sessionStorage.setItem("returning_from_oauth", "true");
       
+      // Construct redirect URL - ensure no extra whitespace
+      const redirectUrl = `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(window.location.pathname)}`;
+      console.log("[AuthPrompt] Redirect URL:", redirectUrl);
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(window.location.pathname)}`,
+          redirectTo: redirectUrl.trim(), // Ensure no leading/trailing whitespace
         },
       });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@/lib/hooks/use-user";
 import styles from "./AgencyMoment.module.css";
 import { AuthPrompt } from "./AuthPrompt";
@@ -23,6 +23,11 @@ interface AgencyMomentProps {
 export function AgencyMoment({ claims, riskSignal, onChoiceSelect, currentState, currentData }: AgencyMomentProps) {
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const { user } = useUser();
+
+  // Reset selected choice when component mounts (when navigating back from preview screens)
+  useEffect(() => {
+    setSelectedChoice(null);
+  }, []);
 
   const choices = [
     {

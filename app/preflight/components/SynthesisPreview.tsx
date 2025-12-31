@@ -23,6 +23,7 @@ interface SynthesisPreviewProps {
   paperContent: string;
   paperFile?: File;
   onApply?: () => void;
+  onBack?: () => void;
 }
 
 export function SynthesisPreview({
@@ -30,8 +31,10 @@ export function SynthesisPreview({
   paperContent,
   paperFile,
   onApply,
+  onBack,
 }: SynthesisPreviewProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [claimShifts, setClaimShifts] = useState<ClaimShift[]>([]);
   const [originalAbstract, setOriginalAbstract] = useState<string>("");
   const [synthesisAbstract, setSynthesisAbstract] = useState<string>("");
@@ -51,8 +54,24 @@ export function SynthesisPreview({
     const generateSynthesis = async () => {
       setIsLoading(true);
       console.log("[SynthesisPreview] Starting synthesis generation...");
-      console.log("[SynthesisPreview] Claims count:", claims.length);
-      console.log("[SynthesisPreview] Paper content length:", paperContent.length);
+      console.log("[SynthesisPreview] Claims count:", claims?.length || 0);
+      console.log("[SynthesisPreview] Paper content length:", paperContent?.length || 0);
+      console.log("[SynthesisPreview] Has file:", !!paperFile);
+
+      // Validate inputs
+      if (!paperContent || paperContent.trim().length === 0) {
+        console.error("[SynthesisPreview] No paper content provided");
+        setError("No paper content provided");
+        setIsLoading(false);
+        return;
+      }
+
+      if (!claims || claims.length === 0) {
+        console.error("[SynthesisPreview] No claims provided");
+        setError("No claims provided");
+        setIsLoading(false);
+        return;
+      }
 
       try {
         let response: Response;
@@ -81,9 +100,24 @@ export function SynthesisPreview({
         console.log("[SynthesisPreview] Response status:", response.status);
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
-          console.error("[SynthesisPreview] API error:", errorData);
-          throw new Error(errorData.error || "Failed to generate synthesis");
+          let errorMessage = "Failed to generate synthesis";
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+            console.error("[SynthesisPreview] API error:", errorData);
+          } catch (e) {
+            // If response isn't JSON, try to get text
+            try {
+              const errorText = await response.text();
+              errorMessage = errorText || errorMessage;
+              console.error("[SynthesisPreview] Error text:", errorText);
+            } catch (e2) {
+              // If that fails too, use status text
+              errorMessage = response.statusText || errorMessage;
+              console.error("[SynthesisPreview] Status text:", response.statusText);
+            }
+          }
+          throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -96,8 +130,10 @@ export function SynthesisPreview({
         setSynthesisAbstract(data.synthesisAbstract || "");
         setAbstractHighlights(data.abstractHighlights || { added: [], softened: [], scopeConditions: [] });
         setSummary(data.summary || { removed: 0, rescoped: 0, reframed: 0, weakened: 0 });
+        setError(null);
       } catch (error) {
         console.error("[SynthesisPreview] Error:", error);
+        setError(error instanceof Error ? error.message : "Failed to generate synthesis");
       } finally {
         setIsLoading(false);
       }
@@ -112,6 +148,23 @@ export function SynthesisPreview({
         <div className={styles.loading}>
           <h2>Generating Synthesis Preview...</h2>
           <p>Analyzing how your claims would shift under a synthesis framing.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <div style={{ padding: "24px", backgroundColor: "#fee", color: "#c33", borderRadius: "8px" }}>
+          <h2 style={{ marginTop: 0 }}>Error Generating Synthesis Preview</h2>
+          <p>{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            style={{ marginTop: "16px", padding: "8px 16px", cursor: "pointer" }}
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -235,7 +288,10 @@ export function SynthesisPreview({
           <button className={styles.secondaryButton}>
             Export as reviewer response
           </button>
-          <button className={styles.secondaryButton}>
+          <button 
+            className={styles.secondaryButton}
+            onClick={() => onBack?.()}
+          >
             Undo / try another path
           </button>
         </div>

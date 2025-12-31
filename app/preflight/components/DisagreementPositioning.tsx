@@ -22,6 +22,7 @@ interface DisagreementPositioningProps {
   paperContent: string;
   paperFile?: File;
   comparators?: Array<File | string>;
+  onBack?: () => void;
 }
 
 export function DisagreementPositioning({
@@ -29,8 +30,10 @@ export function DisagreementPositioning({
   paperContent,
   paperFile,
   comparators,
+  onBack,
 }: DisagreementPositioningProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [disagreementAxes, setDisagreementAxes] = useState<DisagreementAxis[]>([]);
   const [disagreementParagraph, setDisagreementParagraph] = useState<string>("");
   const [highlights, setHighlights] = useState<{
@@ -43,6 +46,22 @@ export function DisagreementPositioning({
     const generateDisagreement = async () => {
       setIsLoading(true);
       console.log("[Disagreement] Starting disagreement positioning generation...");
+      console.log("[Disagreement] Paper content length:", paperContent?.length || 0);
+      console.log("[Disagreement] Claims count:", claims?.length || 0);
+      console.log("[Disagreement] Has file:", !!paperFile);
+
+      // Validate inputs
+      if (!paperContent || paperContent.trim().length === 0) {
+        console.error("[Disagreement] No paper content provided");
+        setIsLoading(false);
+        return;
+      }
+
+      if (!claims || claims.length === 0) {
+        console.error("[Disagreement] No claims provided");
+        setIsLoading(false);
+        return;
+      }
 
       try {
         let response: Response;
@@ -75,8 +94,21 @@ export function DisagreementPositioning({
         console.log("[Disagreement] Response status:", response.status);
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
-          throw new Error(errorData.error || "Failed to generate disagreement positioning");
+          let errorMessage = "Failed to generate disagreement positioning";
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch (e) {
+            // If response isn't JSON, try to get text
+            try {
+              const errorText = await response.text();
+              errorMessage = errorText || errorMessage;
+            } catch (e2) {
+              // If that fails too, use status text
+              errorMessage = response.statusText || errorMessage;
+            }
+          }
+          throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -87,8 +119,10 @@ export function DisagreementPositioning({
         setDisagreementAxes(data.disagreementAxes || []);
         setDisagreementParagraph(data.disagreementParagraph || "");
         setHighlights(data.highlights || { disagreement: [], respect: [], scope: [] });
+        setError(null);
       } catch (error) {
         console.error("[Disagreement] Error:", error);
+        setError(error instanceof Error ? error.message : "Failed to generate disagreement positioning");
       } finally {
         setIsLoading(false);
       }
@@ -103,6 +137,23 @@ export function DisagreementPositioning({
         <div className={styles.loading}>
           <h2>Generating Disagreement Positioning...</h2>
           <p>Analyzing where you diverge and how to frame it explicitly.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <div style={{ padding: "24px", backgroundColor: "#fee", color: "#c33", borderRadius: "8px" }}>
+          <h2 style={{ marginTop: 0 }}>Error Generating Disagreement Positioning</h2>
+          <p>{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            style={{ marginTop: "16px", padding: "8px 16px", cursor: "pointer" }}
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -214,7 +265,10 @@ export function DisagreementPositioning({
           <button className={styles.secondaryButton}>
             Export as reviewer-facing justification
           </button>
-          <button className={styles.secondaryButton}>
+          <button 
+            className={styles.secondaryButton}
+            onClick={() => onBack?.()}
+          >
             Choose another path
           </button>
         </div>

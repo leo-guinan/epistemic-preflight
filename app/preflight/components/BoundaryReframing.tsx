@@ -21,6 +21,7 @@ interface BoundaryReframingProps {
   paperContent: string;
   paperFile?: File;
   comparators?: Array<File | string>;
+  onBack?: () => void;
 }
 
 export function BoundaryReframing({
@@ -28,8 +29,10 @@ export function BoundaryReframing({
   paperContent,
   paperFile,
   comparators,
+  onBack,
 }: BoundaryReframingProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [boundaryShifts, setBoundaryShifts] = useState<BoundaryShift[]>([]);
   const [boundaryClarification, setBoundaryClarification] = useState<string>("");
   const [insight, setInsight] = useState<string>("");
@@ -38,6 +41,22 @@ export function BoundaryReframing({
     const generateBoundaryReframing = async () => {
       setIsLoading(true);
       console.log("[Boundary] Starting boundary reframing generation...");
+      console.log("[Boundary] Paper content length:", paperContent?.length || 0);
+      console.log("[Boundary] Claims count:", claims?.length || 0);
+      console.log("[Boundary] Has file:", !!paperFile);
+
+      // Validate inputs
+      if (!paperContent || paperContent.trim().length === 0) {
+        console.error("[Boundary] No paper content provided");
+        setIsLoading(false);
+        return;
+      }
+
+      if (!claims || claims.length === 0) {
+        console.error("[Boundary] No claims provided");
+        setIsLoading(false);
+        return;
+      }
 
       try {
         let response: Response;
@@ -70,8 +89,21 @@ export function BoundaryReframing({
         console.log("[Boundary] Response status:", response.status);
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
-          throw new Error(errorData.error || "Failed to generate boundary reframing");
+          let errorMessage = "Failed to generate boundary reframing";
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch (e) {
+            // If response isn't JSON, try to get text
+            try {
+              const errorText = await response.text();
+              errorMessage = errorText || errorMessage;
+            } catch (e2) {
+              // If that fails too, use status text
+              errorMessage = response.statusText || errorMessage;
+            }
+          }
+          throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -82,8 +114,10 @@ export function BoundaryReframing({
         setBoundaryShifts(data.boundaryShifts || []);
         setBoundaryClarification(data.boundaryClarification || "");
         setInsight(data.insight || "");
+        setError(null);
       } catch (error) {
         console.error("[Boundary] Error:", error);
+        setError(error instanceof Error ? error.message : "Failed to generate boundary reframing");
       } finally {
         setIsLoading(false);
       }
@@ -98,6 +132,23 @@ export function BoundaryReframing({
         <div className={styles.loading}>
           <h2>Generating Boundary Reframing...</h2>
           <p>Analyzing how shifting the boundary changes your positioning.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <div style={{ padding: "24px", backgroundColor: "#fee", color: "#c33", borderRadius: "8px" }}>
+          <h2 style={{ marginTop: 0 }}>Error Generating Boundary Reframing</h2>
+          <p>{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            style={{ marginTop: "16px", padding: "8px 16px", cursor: "pointer" }}
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -171,7 +222,10 @@ export function BoundaryReframing({
           <button className={styles.secondaryButton}>
             Preview reviewer interpretation
           </button>
-          <button className={styles.secondaryButton}>
+          <button 
+            className={styles.secondaryButton}
+            onClick={() => onBack?.()}
+          >
             Choose another path
           </button>
         </div>

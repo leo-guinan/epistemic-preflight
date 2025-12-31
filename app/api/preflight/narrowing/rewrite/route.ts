@@ -80,9 +80,21 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    if (!paperContent || paperContent.trim().length === 0) {
+      throw new Error("No paper content provided");
+    }
+
+    if (claims.length === 0) {
+      throw new Error("No claims provided");
+    }
+
+    if (!claimId) {
+      throw new Error("Claim ID is required");
+    }
+
     const selectedClaim = claims.find((c) => c.id === claimId);
     if (!selectedClaim) {
-      throw new Error("Claim not found");
+      throw new Error(`Claim with ID ${claimId} not found`);
     }
 
     console.log("[Narrowing Rewrite] Rewriting claim:", claimId);

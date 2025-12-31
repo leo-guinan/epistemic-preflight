@@ -363,6 +363,11 @@ export default function PreflightPage() {
     }
   };
 
+  const handleBackToAgency = () => {
+    console.log("[Preflight] Returning to agency moment");
+    setState("agency");
+  };
+
   const handleSynthesisApply = () => {
     fathomEvents.synthesisApplied();
     setState("synthesis-commit-preview");
@@ -418,6 +423,7 @@ export default function PreflightPage() {
           paperContent={data.paperContent || ""}
           paperFile={data.paperFile}
           onApply={handleSynthesisApply}
+          onBack={handleBackToAgency}
         />
       )}
       {state === "synthesis-commit-preview" && (
@@ -456,6 +462,7 @@ export default function PreflightPage() {
           paperContent={data.paperContent || ""}
           paperFile={data.paperFile}
           comparators={data.comparators}
+          onBack={handleBackToAgency}
         />
       )}
       {state === "boundary-preview" && (
@@ -464,6 +471,7 @@ export default function PreflightPage() {
           paperContent={data.paperContent || ""}
           paperFile={data.paperFile}
           comparators={data.comparators}
+          onBack={handleBackToAgency}
         />
       )}
       {state === "narrowing-preview" && (
@@ -471,6 +479,7 @@ export default function PreflightPage() {
           claims={data.coreClaims || []}
           paperContent={data.paperContent || ""}
           paperFile={data.paperFile}
+          onBack={handleBackToAgency}
         />
       )}
     </div>

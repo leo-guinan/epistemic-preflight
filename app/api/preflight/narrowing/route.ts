@@ -76,6 +76,14 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    if (!paperContent || paperContent.trim().length === 0) {
+      throw new Error("No paper content provided");
+    }
+
+    if (claims.length === 0) {
+      throw new Error("No claims provided");
+    }
+
     console.log("[Narrowing] Paper content length:", paperContent.length);
     console.log("[Narrowing] Claims count:", claims.length);
 

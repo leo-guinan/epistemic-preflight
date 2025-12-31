@@ -29,14 +29,17 @@ interface ClaimNarrowingProps {
   claims: Claim[];
   paperContent: string;
   paperFile?: File;
+  onBack?: () => void;
 }
 
 export function ClaimNarrowing({
   claims,
   paperContent,
   paperFile,
+  onBack,
 }: ClaimNarrowingProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [narrowableClaims, setNarrowableClaims] = useState<NarrowableClaim[]>([]);
   const [selectedClaimId, setSelectedClaimId] = useState<string | null>(null);
   const [claimRewrite, setClaimRewrite] = useState<ClaimRewrite | null>(null);
@@ -45,6 +48,22 @@ export function ClaimNarrowing({
     const identifyNarrowableClaims = async () => {
       setIsLoading(true);
       console.log("[Narrowing] Starting claim narrowing analysis...");
+      console.log("[Narrowing] Paper content length:", paperContent?.length || 0);
+      console.log("[Narrowing] Claims count:", claims?.length || 0);
+      console.log("[Narrowing] Has file:", !!paperFile);
+
+      // Validate inputs
+      if (!paperContent || paperContent.trim().length === 0) {
+        console.error("[Narrowing] No paper content provided");
+        setIsLoading(false);
+        return;
+      }
+
+      if (!claims || claims.length === 0) {
+        console.error("[Narrowing] No claims provided");
+        setIsLoading(false);
+        return;
+      }
 
       try {
         let response: Response;
@@ -73,8 +92,21 @@ export function ClaimNarrowing({
         console.log("[Narrowing] Response status:", response.status);
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
-          throw new Error(errorData.error || "Failed to identify narrowable claims");
+          let errorMessage = "Failed to identify narrowable claims";
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch (e) {
+            // If response isn't JSON, try to get text
+            try {
+              const errorText = await response.text();
+              errorMessage = errorText || errorMessage;
+            } catch (e2) {
+              // If that fails too, use status text
+              errorMessage = response.statusText || errorMessage;
+            }
+          }
+          throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -82,8 +114,10 @@ export function ClaimNarrowing({
         console.log("[Narrowing] - Narrowable claims:", data.narrowableClaims?.length || 0);
 
         setNarrowableClaims(data.narrowableClaims || []);
+        setError(null);
       } catch (error) {
         console.error("[Narrowing] Error:", error);
+        setError(error instanceof Error ? error.message : "Failed to identify narrowable claims");
       } finally {
         setIsLoading(false);
       }
@@ -123,7 +157,19 @@ export function ClaimNarrowing({
       }
 
       if (!response.ok) {
-        throw new Error("Failed to generate rewrite");
+        let errorMessage = "Failed to generate rewrite";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch (e) {
+          try {
+            const errorText = await response.text();
+            errorMessage = errorText || errorMessage;
+          } catch (e2) {
+            errorMessage = response.statusText || errorMessage;
+          }
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -139,6 +185,23 @@ export function ClaimNarrowing({
         <div className={styles.loading}>
           <h2>Analyzing Claims...</h2>
           <p>Identifying which claims could benefit from narrowing.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <div style={{ padding: "24px", backgroundColor: "#fee", color: "#c33", borderRadius: "8px" }}>
+          <h2 style={{ marginTop: 0 }}>Error Analyzing Claims</h2>
+          <p>{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            style={{ marginTop: "16px", padding: "8px 16px", cursor: "pointer" }}
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -227,7 +290,10 @@ export function ClaimNarrowing({
             <button className={styles.secondaryButton}>
               Export reviewer-safe version
             </button>
-            <button className={styles.secondaryButton}>
+            <button 
+              className={styles.secondaryButton}
+              onClick={() => onBack?.()}
+            >
               Undo / choose another path
             </button>
           </div>
