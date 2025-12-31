@@ -122,13 +122,18 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("[API] Error creating paper:", error);
     if (error instanceof z.ZodError) {
+      console.error("[API] Validation errors:", JSON.stringify(error.errors, null, 2));
       return NextResponse.json(
         { error: "Invalid request data", details: error.errors },
         { status: 400 }
       );
     }
+    // Log the full error for debugging
+    if (error instanceof Error) {
+      console.error("[API] Error details:", error.message, error.stack);
+    }
     return NextResponse.json(
-      { error: "Failed to create paper" },
+      { error: "Failed to create paper", message: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }

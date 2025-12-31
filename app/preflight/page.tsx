@@ -66,21 +66,35 @@ export default function PreflightPage() {
   const savePaperToDatabase = async (paperData: PreflightData, currentState: string) => {
     if (!user) return;
 
+    // Validate required data before attempting to save
+    if (!paperData.paperContent || paperData.paperContent.trim().length === 0) {
+      console.warn("[Preflight] Cannot save paper: paperContent is empty");
+      return;
+    }
+
     try {
+      const payload = {
+        title: paperData.paperFile?.name || "Untitled Paper",
+        intent: paperData.intent,
+        targetVenue: paperData.targetVenue,
+        paperContent: paperData.paperContent,
+        fileName: paperData.paperFile?.name,
+        coreClaims: paperData.coreClaims || [],
+        riskSignal: paperData.riskSignal,
+        comparators: paperData.comparators?.map((c) => typeof c === "string" ? c : (c instanceof File ? c.name : String(c))) || [],
+        fullAnalysis: paperData.fullAnalysisResult || null,
+      };
+
+      console.log("[Preflight] Saving paper to database:", {
+        hasContent: !!payload.paperContent,
+        contentLength: payload.paperContent?.length || 0,
+        hasClaims: (payload.coreClaims?.length || 0) > 0,
+      });
+
       const response = await fetch("/api/papers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: paperData.paperFile?.name || "Untitled Paper",
-          intent: paperData.intent,
-          targetVenue: paperData.targetVenue,
-          paperContent: paperData.paperContent || "",
-          fileName: paperData.paperFile?.name,
-          coreClaims: paperData.coreClaims || [],
-          riskSignal: paperData.riskSignal,
-          comparators: paperData.comparators?.map((c) => typeof c === "string" ? c : (c instanceof File ? c.name : String(c))) || [],
-          fullAnalysis: paperData.fullAnalysisResult || null,
-        }),
+        body: JSON.stringify(payload),
       });
       
       if (response.ok) {
@@ -91,7 +105,9 @@ export default function PreflightPage() {
         // Store paper ID for future reference
         setData((prev) => ({ ...prev, paperId: result.paper.id }));
       } else {
-        console.error("[Preflight] Failed to save paper:", await response.text());
+        const errorText = await response.text();
+        console.error("[Preflight] Failed to save paper:", response.status, errorText);
+        // Don't clear localStorage if save fails - user can try again
       }
     } catch (error) {
       console.error("[Preflight] Error saving paper:", error);
@@ -135,14 +151,23 @@ export default function PreflightPage() {
   }, [userLoading, hasRestoredState]);
 
   // Save to database when user becomes available after restoring state
+  // Only save if we have actual paper content and analysis data
   useEffect(() => {
-    if (hasRestoredState && user && data.paperContent && !data.paperId) {
-      // User just signed in and we have restored state - save to database
+    if (
+      hasRestoredState && 
+      user && 
+      data.paperContent && 
+      data.paperContent.trim().length > 0 && 
+      data.coreClaims && 
+      data.coreClaims.length > 0 &&
+      !data.paperId
+    ) {
+      // User just signed in and we have restored state with actual analysis - save to database
       console.log("[Preflight] User signed in, saving restored paper to database");
       savePaperToDatabase(data, state);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, hasRestoredState, data.paperContent, data.paperId, state]);
+  }, [user, hasRestoredState, data.paperContent, data.coreClaims, data.paperId, state]);
 
   // Move anonymous files to permanent location after sign-in
   useEffect(() => {
