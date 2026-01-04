@@ -62,6 +62,7 @@ export default function PreflightPage() {
   const [state, setState] = useState<PreflightState>("intent");
   const [data, setData] = useState<PreflightData>({});
   const [hasRestoredState, setHasRestoredState] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Helper function to save paper to database
   const savePaperToDatabase = async (paperData: PreflightData, currentState: string) => {
@@ -244,8 +245,8 @@ export default function PreflightPage() {
     
     setData({ ...data, paperContent: content, paperFile: file });
     
-    // Immediately trigger partial analysis
-    setState("analysis");
+    // Set loading state before API call
+    setIsAnalyzing(true);
     
     // Call API to get immediate analysis
     try {
@@ -311,8 +312,13 @@ export default function PreflightPage() {
 
       // Track analysis completion
       fathomEvents.analysisCompleted(analysis.claims?.length || 0);
+      
+      // Now set state to analysis and clear loading
+      setState("analysis");
+      setIsAnalyzing(false);
     } catch (error) {
       console.error("[Preflight] Analysis error:", error);
+      setIsAnalyzing(false);
       alert(error instanceof Error ? error.message : "Failed to analyze paper. Please try again.");
       // Go back to upload state on error
       setState("upload");
@@ -454,8 +460,16 @@ export default function PreflightPage() {
       {state === "intent" && (
         <IntentDeclaration onSubmit={handleIntentSubmit} />
       )}
-      {state === "upload" && (
+      {state === "upload" && !isAnalyzing && (
         <PaperUpload onSubmit={handlePaperUpload} />
+      )}
+      {state === "upload" && isAnalyzing && (
+        <div className={styles.loadingContainer}>
+          <div className={styles.loading}>
+            <h2>Analyzing your paper...</h2>
+            <p>Extracting core claims and identifying review risks.</p>
+          </div>
+        </div>
       )}
       {state === "analysis" && (
         <ImmediateAnalysis
