@@ -356,6 +356,57 @@ export default function PreflightPage() {
     }
   };
 
+  const handleVenueSelected = (venueId: string, fieldFamily: string) => {
+    setData({ ...data, venueId, targetVenue: venueId });
+    setState("venue-intake");
+  };
+
+  const handleVenueIntakeSubmit = async (intake: VenueIntakeType) => {
+    if (!data.paperContent || !data.coreClaims || !data.venueId) {
+      alert("Missing required data for venue review");
+      return;
+    }
+
+    try {
+      setData({ ...data, venueIntake: intake });
+      
+      const response = await fetch("/api/preflight/venue-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paperContent: data.paperContent,
+          claims: data.coreClaims,
+          venueId: data.venueId,
+          venueIntake: intake,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to generate venue review");
+      }
+
+      const reviewResults = await response.json();
+      setData({
+        ...data,
+        venueIntake: intake,
+        venueReviewResults: reviewResults,
+      });
+      setState("venue-review");
+    } catch (error) {
+      console.error("[Preflight] Venue review error:", error);
+      alert(error instanceof Error ? error.message : "Failed to generate venue review");
+    }
+  };
+
+  const handleVenueReviewBack = () => {
+    setState("venue-intake");
+  };
+
+  const handleVenueReviewSkip = () => {
+    setState("comparators");
+  };
+
   const handleComparatorsSubmit = (comparators: Array<File | string>) => {
     setData({ ...data, comparators });
     setState("full-analysis");
