@@ -31,6 +31,12 @@ export function AgencyMoment({ claims, riskSignal, onChoiceSelect, currentState,
 
   const choices = [
     {
+      id: "venue-review",
+      label: "Get venue-specific review",
+      description:
+        "Run a multi-agent review panel for a specific publication venue (NeurIPS, CHI, Synthese, etc.).",
+    },
+    {
       id: "own-disagreement",
       label: "Own this disagreement explicitly",
       description:

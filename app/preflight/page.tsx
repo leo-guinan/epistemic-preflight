@@ -348,12 +348,8 @@ export default function PreflightPage() {
   };
 
   const handleAnalysisContinue = () => {
-    // Check if user has a target venue - if so, offer venue review
-    if (data.targetVenue || data.venueId) {
-      setState("venue-selection");
-    } else {
-      setState("comparators");
-    }
+    // Always go to comparators - venue review is now available from agency moment
+    setState("comparators");
   };
 
   const handleVenueSelected = (venueId: string, fieldFamily: string) => {
@@ -431,6 +427,9 @@ export default function PreflightPage() {
     console.log("[Preflight] Agency choice selected:", choiceId);
     fathomEvents.agencyChoiceSelected(choiceId);
     switch (choiceId) {
+      case "venue-review":
+        setState("venue-selection");
+        break;
       case "synthesis-framing":
         setState("synthesis-preview");
         break;
