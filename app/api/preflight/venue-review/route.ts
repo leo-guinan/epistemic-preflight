@@ -55,10 +55,10 @@ export async function POST(request: NextRequest) {
       .join("\n");
 
     // Get reviewer agents
-    const reviewer1 = mastra.getAgent("reviewer1MethodsValidity");
-    const reviewer2 = mastra.getAgent("reviewer2RelatedWorkNovelty");
-    const reviewer3 = mastra.getAgent("reviewer3ClarityFraming");
-    const metaReviewer = mastra.getAgent("metaReviewer");
+    const reviewer1 = mastra.getAgent("reviewer1Agent");
+    const reviewer2 = mastra.getAgent("reviewer2Agent");
+    const reviewer3 = mastra.getAgent("reviewer3Agent");
+    const metaReviewer = mastra.getAgent("metaReviewerAgent");
 
     // Build reviewer prompts with venue context
     const venueContext = `

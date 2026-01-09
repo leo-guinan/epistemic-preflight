@@ -14,7 +14,7 @@ const getOpenAIClient = () => {
 
 // Reviewer 1: Methods & Validity (Evidence Hawk)
 export const reviewer1Agent = new Agent({
-  id: "reviewer1MethodsValidity",
+  id: "reviewer1Agent",
   name: "Reviewer 1: Methods & Validity",
   instructions: `
     You are a rigorous peer reviewer specializing in methodological validity and evidence quality.
@@ -38,7 +38,7 @@ export const reviewer1Agent = new Agent({
 
 // Reviewer 2: Related Work & Novelty (Prior Art Hawk)
 export const reviewer2Agent = new Agent({
-  id: "reviewer2RelatedWorkNovelty",
+  id: "reviewer2Agent",
   name: "Reviewer 2: Related Work & Novelty",
   instructions: `
     You are a peer reviewer specializing in literature coverage and novelty assessment.
@@ -61,7 +61,7 @@ export const reviewer2Agent = new Agent({
 
 // Reviewer 3: Clarity & Framing (Communication + Scope Policing)
 export const reviewer3Agent = new Agent({
-  id: "reviewer3ClarityFraming",
+  id: "reviewer3Agent",
   name: "Reviewer 3: Clarity & Framing",
   instructions: `
     You are a peer reviewer specializing in clarity, communication, and scope management.
@@ -85,7 +85,7 @@ export const reviewer3Agent = new Agent({
 
 // Meta-Reviewer / Area Chair Agent
 export const metaReviewerAgent = new Agent({
-  id: "metaReviewer",
+  id: "metaReviewerAgent",
   name: "Meta-Reviewer / Area Chair",
   instructions: `
     You are an area chair synthesizing multiple reviewer reports into a coherent decision.
