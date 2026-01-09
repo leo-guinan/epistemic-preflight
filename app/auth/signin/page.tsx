@@ -1,7 +1,6 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { fathomEvents } from "@/lib/fathom-tracking";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
 import styles from "./page.module.css";
@@ -40,17 +39,6 @@ function SignInForm() {
     try {
       setIsLoading(true);
       setError(null);
-      
-      // Track signup event with demo attribution if available
-      const lastViewedDemo = sessionStorage.getItem('last_viewed_demo');
-      if (lastViewedDemo) {
-        fathomEvents.signupFromDemo(lastViewedDemo);
-        // Clear the demo tracking after use
-        sessionStorage.removeItem('last_viewed_demo');
-      } else {
-        fathomEvents.signup('direct');
-      }
-      
       const callbackUrl = searchParams?.get("callbackUrl") || "/dashboard";
       
       // Construct redirect URL - ensure no extra whitespace

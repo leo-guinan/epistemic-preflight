@@ -1,0 +1,62 @@
+{
+  "id": "neurips",
+  "name": "NeurIPS",
+  "fieldFamily": "ML",
+  "contributionNorms": {
+    "publishableUnits": [
+      "novel algorithm with theoretical or empirical justification",
+      "significant empirical finding with rigorous evaluation",
+      "new dataset with clear utility and proper documentation",
+      "theoretical insight with proofs or strong analysis"
+    ],
+    "noveltyThreshold": "conceptual"
+  },
+  "expectedEvidence": {
+    "theory": ["proofs", "simulations"],
+    "method": ["experiments", "simulations"],
+    "system": ["experiments", "case-studies"],
+    "dataset": ["experiments", "case-studies"],
+    "empirical-study": ["experiments", "user-study"],
+    "position": ["case-studies"]
+  },
+  "commonRejectionReasons": [
+    "insufficient experimental validation",
+    "weak baselines or comparison",
+    "incremental contribution without clear advance",
+    "missing ablation studies",
+    "theoretical claims without proofs",
+    "dataset issues (bias, quality, documentation)",
+    "reproducibility concerns"
+  ],
+  "tonePreferences": {
+    "formality": "balanced",
+    "speculativeTolerance": "low"
+  },
+  "relatedWorkExpectations": {
+    "requiredCanon": [
+      "recent SOTA methods in the area",
+      "foundational papers establishing the problem",
+      "directly competing approaches"
+    ],
+    "citationDepth": "comprehensive"
+  },
+  "methodsCulture": "quant-heavy",
+  "ethicsRequirements": {
+    "irbRequired": false,
+    "datasetDocumentation": true,
+    "harmsAnalysis": true
+  },
+  "formatConstraints": {
+    "pageLimit": 8,
+    "structureExpectations": [
+      "abstract",
+      "introduction",
+      "related work",
+      "method",
+      "experiments",
+      "conclusion"
+    ]
+  },
+  "optionalReviewers": []
+}
+

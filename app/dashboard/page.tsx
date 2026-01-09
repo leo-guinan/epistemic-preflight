@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/hooks/use-user";
-import { clearPreflightState } from "@/lib/preflight-state";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./page.module.css";
@@ -70,15 +69,7 @@ export default function DashboardPage() {
       <div className={styles.header}>
         <div className={styles.headerContent}>
           <h1 className={styles.title}>My Papers</h1>
-          <Link 
-            href="/preflight" 
-            className={styles.newPaperButton}
-            onClick={() => {
-              // Clear any saved preflight state so user starts fresh
-              clearPreflightState();
-              sessionStorage.removeItem("returning_from_oauth");
-            }}
-          >
+          <Link href="/preflight" className={styles.newPaperButton}>
             + New Analysis
           </Link>
         </div>
@@ -93,15 +84,7 @@ export default function DashboardPage() {
           <p className={styles.emptyDescription}>
             Get started by analyzing your first paper.
           </p>
-          <Link 
-            href="/preflight" 
-            className={styles.emptyButton}
-            onClick={() => {
-              // Clear any saved preflight state so user starts fresh
-              clearPreflightState();
-              sessionStorage.removeItem("returning_from_oauth");
-            }}
-          >
+          <Link href="/preflight" className={styles.emptyButton}>
             Start Your First Analysis
           </Link>
         </div>

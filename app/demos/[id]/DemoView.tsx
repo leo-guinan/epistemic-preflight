@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import type { DemoPaper } from "@/lib/demo-data-types";
-import { fathomEvents } from "@/lib/fathom-tracking";
 import styles from "./DemoView.module.css";
 
 interface DemoViewProps {
@@ -14,13 +13,6 @@ export default function DemoView({ demo }: DemoViewProps) {
   const [activeSection, setActiveSection] = useState<
     "claims" | "analysis" | "synthesis"
   >("claims");
-
-  // Track demo view on mount
-  useEffect(() => {
-    fathomEvents.demoViewed(demo.id);
-    // Store demo ID in sessionStorage to attribute signups
-    sessionStorage.setItem('last_viewed_demo', demo.id);
-  }, [demo.id]);
 
   return (
     <div className={styles.container}>

@@ -65,23 +65,5 @@ export const fathomEvents = {
   synthesisCommitted: () => {
     trackFathomEvent('synthesis committed');
   },
-
-  // Demo events
-  demoViewed: (demoId: string) => {
-    trackFathomEvent(`demo viewed: ${demoId}`);
-  },
-  demoCardClicked: (demoId: string) => {
-    trackFathomEvent(`demo card clicked: ${demoId}`);
-  },
-  signupFromDemo: (demoId: string) => {
-    trackFathomEvent(`signup from demo: ${demoId}`);
-  },
-  signup: (source?: string) => {
-    if (source) {
-      trackFathomEvent(`signup: ${source}`);
-    } else {
-      trackFathomEvent('signup');
-    }
-  },
 };
 

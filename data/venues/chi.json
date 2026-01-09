@@ -1,0 +1,66 @@
+{
+  "id": "chi",
+  "name": "CHI",
+  "fieldFamily": "HCI",
+  "contributionNorms": {
+    "publishableUnits": [
+      "novel interaction technique with user evaluation",
+      "empirical study revealing new insights about human behavior",
+      "design framework or method with validation",
+      "systematic review or meta-analysis",
+      "position paper with strong theoretical grounding"
+    ],
+    "noveltyThreshold": "both"
+  },
+  "expectedEvidence": {
+    "theory": ["user-study", "case-studies"],
+    "method": ["user-study", "experiments"],
+    "system": ["user-study", "case-studies"],
+    "dataset": ["user-study", "case-studies"],
+    "empirical-study": ["user-study", "experiments"],
+    "position": ["case-studies"]
+  },
+  "commonRejectionReasons": [
+    "insufficient user evaluation (n < 5 or no proper study)",
+    "weak theoretical contribution",
+    "missing related work in HCI",
+    "lack of design rationale",
+    "accessibility or ethics concerns not addressed",
+    "incremental system without clear advance",
+    "missing discussion of limitations"
+  ],
+  "tonePreferences": {
+    "formality": "balanced",
+    "speculativeTolerance": "moderate"
+  },
+  "relatedWorkExpectations": {
+    "requiredCanon": [
+      "foundational HCI theory",
+      "recent CHI/CSCW papers in the area",
+      "relevant design frameworks",
+      "competing systems or techniques"
+    ],
+    "citationDepth": "comprehensive"
+  },
+  "methodsCulture": "qual-heavy",
+  "ethicsRequirements": {
+    "irbRequired": true,
+    "datasetDocumentation": true,
+    "harmsAnalysis": true
+  },
+  "formatConstraints": {
+    "pageLimit": 10,
+    "structureExpectations": [
+      "abstract",
+      "introduction",
+      "related work",
+      "method/design",
+      "evaluation",
+      "discussion",
+      "limitations",
+      "conclusion"
+    ]
+  },
+  "optionalReviewers": ["ethics"]
+}
+

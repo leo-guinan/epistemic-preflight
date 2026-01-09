@@ -1,0 +1,59 @@
+{
+  "id": "synthese",
+  "name": "Synthese",
+  "fieldFamily": "Philosophy",
+  "contributionNorms": {
+    "publishableUnits": [
+      "novel philosophical argument with rigorous analysis",
+      "conceptual clarification of existing debates",
+      "synthesis of disparate philosophical traditions",
+      "critical analysis of existing positions",
+      "formal or logical analysis"
+    ],
+    "noveltyThreshold": "conceptual"
+  },
+  "expectedEvidence": {
+    "theory": ["proofs", "case-studies"],
+    "method": ["case-studies"],
+    "position": ["case-studies"]
+  },
+  "commonRejectionReasons": [
+    "insufficient engagement with existing literature",
+    "unclear argument structure",
+    "missing responses to obvious objections",
+    "overly speculative without grounding",
+    "conflation of distinct concepts",
+    "weak logical structure"
+  ],
+  "tonePreferences": {
+    "formality": "formal",
+    "speculativeTolerance": "moderate"
+  },
+  "relatedWorkExpectations": {
+    "requiredCanon": [
+      "foundational papers in the philosophical tradition",
+      "recent Synthese/Philosophy of Science papers",
+      "directly competing positions",
+      "historical context"
+    ],
+    "citationDepth": "comprehensive"
+  },
+  "methodsCulture": "theory-heavy",
+  "ethicsRequirements": {
+    "irbRequired": false,
+    "datasetDocumentation": false,
+    "harmsAnalysis": false
+  },
+  "formatConstraints": {
+    "pageLimit": 30,
+    "structureExpectations": [
+      "introduction",
+      "background",
+      "argument",
+      "objections and responses",
+      "conclusion"
+    ]
+  },
+  "optionalReviewers": ["theory"]
+}
+

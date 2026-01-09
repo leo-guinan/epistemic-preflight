@@ -15,14 +15,20 @@ import { SynthesisCommitted } from "./components/SynthesisCommitted";
 import { DisagreementPositioning } from "./components/DisagreementPositioning";
 import { BoundaryReframing } from "./components/BoundaryReframing";
 import { ClaimNarrowing } from "./components/ClaimNarrowing";
-import { Navigation } from "@/app/components/Navigation";
+import { VenueSelection } from "./components/VenueSelection";
+import { VenueIntake } from "./components/VenueIntake";
+import { VenueReviewResults } from "./components/VenueReviewResults";
 import { fathomEvents } from "@/lib/fathom-tracking";
+import type { VenueIntake as VenueIntakeType, ReviewerReport, MetaReviewerReport } from "@/lib/venue-spec-types";
 import styles from "./page.module.css";
 
 type PreflightState =
   | "intent"
   | "upload"
   | "analysis"
+  | "venue-selection"
+  | "venue-intake"
+  | "venue-review"
   | "comparators"
   | "full-analysis"
   | "agency"
@@ -55,6 +61,28 @@ interface PreflightData {
   commitId?: string;
   paperId?: string;
   fullAnalysisResult?: any;
+  venueId?: string;
+  venueIntake?: VenueIntakeType;
+  venueReviewResults?: {
+    reviewerReports: ReviewerReport[];
+    metaReviewerReport: MetaReviewerReport;
+    decisionForecast: {
+      accept: number;
+      weakAccept: number;
+      weakReject: number;
+      reject: number;
+    };
+    topChanges: Array<{
+      priority: number;
+      description: string;
+      claimId?: string;
+      reviewerId?: string;
+    }>;
+    venueFitScorecard: {
+      overallFit: number;
+      reasons: string[];
+    };
+  };
 }
 
 export default function PreflightPage() {
@@ -62,7 +90,6 @@ export default function PreflightPage() {
   const [state, setState] = useState<PreflightState>("intent");
   const [data, setData] = useState<PreflightData>({});
   const [hasRestoredState, setHasRestoredState] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Helper function to save paper to database
   const savePaperToDatabase = async (paperData: PreflightData, currentState: string) => {
@@ -245,8 +272,8 @@ export default function PreflightPage() {
     
     setData({ ...data, paperContent: content, paperFile: file });
     
-    // Set loading state before API call
-    setIsAnalyzing(true);
+    // Immediately trigger partial analysis
+    setState("analysis");
     
     // Call API to get immediate analysis
     try {
@@ -312,13 +339,8 @@ export default function PreflightPage() {
 
       // Track analysis completion
       fathomEvents.analysisCompleted(analysis.claims?.length || 0);
-      
-      // Now set state to analysis and clear loading
-      setState("analysis");
-      setIsAnalyzing(false);
     } catch (error) {
       console.error("[Preflight] Analysis error:", error);
-      setIsAnalyzing(false);
       alert(error instanceof Error ? error.message : "Failed to analyze paper. Please try again.");
       // Go back to upload state on error
       setState("upload");
@@ -326,7 +348,12 @@ export default function PreflightPage() {
   };
 
   const handleAnalysisContinue = () => {
-    setState("comparators");
+    // Check if user has a target venue - if so, offer venue review
+    if (data.targetVenue || data.venueId) {
+      setState("venue-selection");
+    } else {
+      setState("comparators");
+    }
   };
 
   const handleComparatorsSubmit = (comparators: Array<File | string>) => {
@@ -454,28 +481,44 @@ export default function PreflightPage() {
   };
 
   return (
-    <>
-      <Navigation />
-      <div className={styles.container}>
+    <div className={styles.container}>
       {state === "intent" && (
         <IntentDeclaration onSubmit={handleIntentSubmit} />
       )}
-      {state === "upload" && !isAnalyzing && (
+      {state === "upload" && (
         <PaperUpload onSubmit={handlePaperUpload} />
-      )}
-      {state === "upload" && isAnalyzing && (
-        <div className={styles.loadingContainer}>
-          <div className={styles.loading}>
-            <h2>Analyzing your paper...</h2>
-            <p>Extracting core claims and identifying review risks.</p>
-          </div>
-        </div>
       )}
       {state === "analysis" && (
         <ImmediateAnalysis
           claims={data.coreClaims || []}
           riskSignal={data.riskSignal}
           onContinue={handleAnalysisContinue}
+        />
+      )}
+      {state === "venue-selection" && (
+        <VenueSelection
+          onSubmit={handleVenueSelected}
+          onSkip={handleVenueReviewSkip}
+        />
+      )}
+      {state === "venue-intake" && (
+        <VenueIntake
+          onSubmit={handleVenueIntakeSubmit}
+          onBack={() => setState("venue-selection")}
+        />
+      )}
+      {state === "venue-review" && data.venueReviewResults && (
+        <VenueReviewResults
+          reviewerReports={data.venueReviewResults.reviewerReports}
+          metaReviewerReport={data.venueReviewResults.metaReviewerReport}
+          decisionForecast={data.venueReviewResults.decisionForecast}
+          topChanges={data.venueReviewResults.topChanges}
+          venueFitScorecard={data.venueReviewResults.venueFitScorecard}
+          onBack={handleVenueReviewBack}
+          onApplyFixes={() => {
+            // Navigate to agency moment to apply fixes
+            setState("agency");
+          }}
         />
       )}
       {state === "comparators" && (
@@ -566,7 +609,6 @@ export default function PreflightPage() {
         />
       )}
     </div>
-    </>
   );
 }
 

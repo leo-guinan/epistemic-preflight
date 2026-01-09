@@ -2,7 +2,6 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { savePreflightState } from "@/lib/preflight-state";
-import { fathomEvents } from "@/lib/fathom-tracking";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -22,16 +21,6 @@ export function AuthPrompt({ onSignInComplete, currentState, currentData }: Auth
   const handleSignIn = async () => {
     try {
       setIsLoading(true);
-      
-      // Track signup event with demo attribution if available
-      const lastViewedDemo = sessionStorage.getItem('last_viewed_demo');
-      if (lastViewedDemo) {
-        fathomEvents.signupFromDemo(lastViewedDemo);
-        // Clear the demo tracking after use
-        sessionStorage.removeItem('last_viewed_demo');
-      } else {
-        fathomEvents.signup('preflight');
-      }
       
       // Save current state to localStorage before redirecting
       if (currentState && currentData) {

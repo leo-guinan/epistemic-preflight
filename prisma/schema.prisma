@@ -41,6 +41,8 @@ model Paper {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
+  reviewRuns       ReviewRun[]
+
   @@index([userId])
 }
 
@@ -76,5 +78,55 @@ model UploadRateLimit {
 
   @@index([ipAddress])
   @@index([resetAt]) // For cleanup queries
+}
+
+model Venue {
+  id          String   @id @default(cuid())
+  name        String
+  fieldFamily String
+  spec        String   @db.Text // JSON string of VenueSpec
+  version     Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reviewRuns  ReviewRun[]
+
+  @@unique([name, version])
+}
+
+model ReviewRun {
+  id              String   @id @default(cuid())
+  paperId         String
+  paper           Paper    @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  venueId         String
+  venue           Venue    @relation(fields: [venueId], references: [id])
+  venueIntake     String   @db.Text // JSON string of VenueIntake
+  reviewerReports String   @db.Text // JSON string of ReviewerReport[]
+  metaReviewerReport String @db.Text // JSON string of MetaReviewerReport
+  decisionForecast String   @db.Text // JSON string of decision probabilities
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  requiredChanges RequiredChange[]
+
+  @@index([paperId])
+  @@index([venueId])
+}
+
+model RequiredChange {
+  id            String   @id @default(cuid())
+  reviewRunId   String
+  reviewRun     ReviewRun @relation(fields: [reviewRunId], references: [id], onDelete: Cascade)
+  claimId       String?
+  sectionId     String?
+  priority      Int      // 1-5, 1 = highest
+  description   String   @db.Text
+  action        String   // "narrow" | "scope" | "add-boundary" | etc.
+  applied       Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([reviewRunId])
+  @@index([claimId])
 }
 

@@ -1,0 +1,370 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.header {
+  margin-bottom: 48px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #1a1a1a;
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  color: #666;
+  margin: 0;
+}
+
+.section {
+  margin-bottom: 48px;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 24px 0;
+  color: #1a1a1a;
+}
+
+/* Decision Forecast */
+.decisionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.decisionCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.decisionLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.decisionBar {
+  height: 8px;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+.decisionPercent {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* Venue Fit Scorecard */
+.fitCard {
+  padding: 24px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.fitScore {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.fitLabel {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.fitValue {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.fitReasons h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #333;
+}
+
+.fitReasons ul {
+  margin: 0;
+  padding-left: 24px;
+}
+
+.fitReasons li {
+  margin-bottom: 8px;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Required Changes */
+.changesList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.changeItem {
+  padding: 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.changeHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.changeRank {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  min-width: 40px;
+}
+
+.changeDescription {
+  flex: 1;
+  color: #333;
+  line-height: 1.6;
+}
+
+.changeMeta {
+  margin-top: 8px;
+  font-size: 0.875rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* Meta-Reviewer */
+.metaCard {
+  padding: 24px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.metaSection {
+  margin-bottom: 24px;
+}
+
+.metaSection:last-child {
+  margin-bottom: 0;
+}
+
+.metaSection h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #333;
+}
+
+.metaSection p {
+  margin: 0;
+  color: #666;
+  line-height: 1.6;
+}
+
+.metaSection ol {
+  margin: 0;
+  padding-left: 24px;
+}
+
+.metaSection li {
+  margin-bottom: 8px;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Reviewer Reports */
+.reviewersList {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.reviewerCard {
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.reviewerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.reviewerHeader:hover {
+  background-color: #f9f9f9;
+}
+
+.reviewerInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.reviewerName {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.recommendationBadge {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+}
+
+.reviewerScores {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.scoreItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+}
+
+.scoreItem span:first-child {
+  color: #666;
+}
+
+.scoreItem span:last-child {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.expandButton {
+  width: 32px;
+  height: 32px;
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: transparent;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.expandButton:hover {
+  border-color: #999;
+  color: #333;
+}
+
+.reviewerDetails {
+  padding: 24px;
+  border-top: 2px solid #e0e0e0;
+  background-color: #fafafa;
+}
+
+.detailSection {
+  margin-bottom: 24px;
+}
+
+.detailSection:last-child {
+  margin-bottom: 0;
+}
+
+.detailSection h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #333;
+}
+
+.detailSection p {
+  margin: 0;
+  color: #666;
+  line-height: 1.6;
+}
+
+.detailSection ul {
+  margin: 0;
+  padding-left: 24px;
+}
+
+.detailSection li {
+  margin-bottom: 8px;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  padding-top: 24px;
+  border-top: 2px solid #e0e0e0;
+}
+
+.backButton {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #666;
+  background-color: transparent;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.backButton:hover {
+  border-color: #999;
+  color: #333;
+}
+
+.applyButton {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background-color: #1a1a1a;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.applyButton:hover {
+  background-color: #333;
+}
+
