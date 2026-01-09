@@ -358,14 +358,25 @@ export default function PreflightPage() {
   };
 
   const handleVenueIntakeSubmit = async (intake: VenueIntakeType) => {
+    console.log("[Preflight] Venue intake submit:", {
+      hasPaperContent: !!data.paperContent,
+      hasClaims: !!data.coreClaims && data.coreClaims.length > 0,
+      venueId: data.venueId,
+      intake,
+    });
+
     if (!data.paperContent || !data.coreClaims || !data.venueId) {
-      alert("Missing required data for venue review");
-      return;
+      const missing = [];
+      if (!data.paperContent) missing.push("paper content");
+      if (!data.coreClaims || data.coreClaims.length === 0) missing.push("claims");
+      if (!data.venueId) missing.push("venue selection");
+      throw new Error(`Missing required data: ${missing.join(", ")}. Please go back and ensure your paper has been analyzed.`);
     }
 
     try {
       setData({ ...data, venueIntake: intake });
       
+      console.log("[Preflight] Calling venue review API...");
       const response = await fetch("/api/preflight/venue-review", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -377,12 +388,29 @@ export default function PreflightPage() {
         }),
       });
 
+      console.log("[Preflight] Venue review API response status:", response.status);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to generate venue review");
+        let errorMessage = "Failed to generate venue review";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+          if (errorData.details) {
+            console.error("[Preflight] Error details:", errorData.details);
+          }
+        } catch (e) {
+          const errorText = await response.text();
+          errorMessage = errorText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
 
       const reviewResults = await response.json();
+      console.log("[Preflight] Venue review results received:", {
+        hasReviewerReports: !!reviewResults.reviewerReports,
+        hasMetaReviewer: !!reviewResults.metaReviewerReport,
+      });
+
       setData({
         ...data,
         venueIntake: intake,
@@ -391,7 +419,7 @@ export default function PreflightPage() {
       setState("venue-review");
     } catch (error) {
       console.error("[Preflight] Venue review error:", error);
-      alert(error instanceof Error ? error.message : "Failed to generate venue review");
+      throw error; // Re-throw so the component can handle it
     }
   };
 

@@ -31,6 +31,8 @@ export function VenueIntake({ onSubmit, onBack }: VenueIntakeProps) {
   const [riskTolerance, setRiskTolerance] = useState<RiskTolerance | "">("");
   const [whatsNew, setWhatsNew] = useState("");
   const [reviewerAttacks, setReviewerAttacks] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const contributionOptions: ContributionType[] = [
     "theory",
@@ -69,8 +71,10 @@ export function VenueIntake({ onSubmit, onBack }: VenueIntakeProps) {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    
     if (
       contributionType &&
       evidenceTypes.length > 0 &&
@@ -80,15 +84,23 @@ export function VenueIntake({ onSubmit, onBack }: VenueIntakeProps) {
       whatsNew.trim() &&
       reviewerAttacks.trim()
     ) {
-      onSubmit({
-        contributionType,
-        evidenceTypeAvailable: evidenceTypes,
-        claimsAre,
-        targetAudience,
-        riskTolerance,
-        whatsNew: whatsNew.trim(),
-        reviewerAttacks: reviewerAttacks.trim(),
-      });
+      setIsSubmitting(true);
+      try {
+        await onSubmit({
+          contributionType,
+          evidenceTypeAvailable: evidenceTypes,
+          claimsAre,
+          targetAudience,
+          riskTolerance,
+          whatsNew: whatsNew.trim(),
+          reviewerAttacks: reviewerAttacks.trim(),
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to submit form");
+        setIsSubmitting(false);
+      }
+    } else {
+      setError("Please fill in all required fields");
     }
   };
 
@@ -124,6 +136,7 @@ export function VenueIntake({ onSubmit, onBack }: VenueIntakeProps) {
                   onChange={(e) =>
                     setContributionType(e.target.value as ContributionType)
                   }
+                  disabled={isSubmitting}
                 />
                 <span>{option.replace("-", " ")}</span>
               </label>
@@ -142,6 +155,7 @@ export function VenueIntake({ onSubmit, onBack }: VenueIntakeProps) {
                   type="checkbox"
                   checked={evidenceTypes.includes(option)}
                   onChange={() => handleEvidenceToggle(option)}
+                  disabled={isSubmitting}
                 />
                 <span>{option.replace("-", " ")}</span>
               </label>
@@ -162,6 +176,7 @@ export function VenueIntake({ onSubmit, onBack }: VenueIntakeProps) {
                   value={option}
                   checked={claimsAre === option}
                   onChange={(e) => setClaimsAre(e.target.value as ClaimType)}
+                  disabled={isSubmitting}
                 />
                 <span>{option}</span>
               </label>
@@ -184,6 +199,7 @@ export function VenueIntake({ onSubmit, onBack }: VenueIntakeProps) {
                   onChange={(e) =>
                     setTargetAudience(e.target.value as AudienceType)
                   }
+                  disabled={isSubmitting}
                 />
                 <span>{option.replace("-", " ")}</span>
               </label>
@@ -206,6 +222,7 @@ export function VenueIntake({ onSubmit, onBack }: VenueIntakeProps) {
                   onChange={(e) =>
                     setRiskTolerance(e.target.value as RiskTolerance)
                   }
+                  disabled={isSubmitting}
                 />
                 <span>{option}</span>
               </label>
@@ -224,6 +241,7 @@ export function VenueIntake({ onSubmit, onBack }: VenueIntakeProps) {
             placeholder="Briefly describe what makes this paper novel or different from existing work..."
             className={styles.textarea}
             rows={3}
+            disabled={isSubmitting}
           />
         </div>
 
@@ -239,6 +257,7 @@ export function VenueIntake({ onSubmit, onBack }: VenueIntakeProps) {
             placeholder="What are the weak points reviewers are likely to criticize?"
             className={styles.textarea}
             rows={3}
+            disabled={isSubmitting}
           />
         </div>
 
@@ -248,17 +267,40 @@ export function VenueIntake({ onSubmit, onBack }: VenueIntakeProps) {
               type="button"
               onClick={onBack}
               className={styles.backButton}
+              disabled={isSubmitting}
             >
               Back
             </button>
           )}
           <button
             type="submit"
-            disabled={!isFormValid}
+            disabled={!isFormValid || isSubmitting}
             className={styles.submitButton}
           >
-            Generate Review Panel
+            {isSubmitting ? (
+              <>
+                <span style={{ marginRight: "8px" }}>⏳</span>
+                Generating Review Panel...
+              </>
+            ) : (
+              "Generate Review Panel"
+            )}
           </button>
+          {error && (
+            <div style={{ color: "#d32f2f", marginTop: "16px", padding: "12px", backgroundColor: "#ffebee", borderRadius: "6px" }}>
+              {error}
+            </div>
+          )}
+          {isSubmitting && (
+            <div style={{ marginTop: "16px", padding: "12px", backgroundColor: "#e3f2fd", borderRadius: "6px", color: "#1976d2" }}>
+              <p style={{ margin: 0, fontWeight: 500 }}>
+                Running multi-agent review panel... This may take 30-60 seconds.
+              </p>
+              <p style={{ margin: "8px 0 0 0", fontSize: "0.875rem", opacity: 0.8 }}>
+                Our reviewers are analyzing your paper against venue-specific norms.
+              </p>
+            </div>
+          )}
         </div>
       </form>
     </div>
